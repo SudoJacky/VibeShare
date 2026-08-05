@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { OpeningSequence } from "./opening/OpeningSequence";
 
 gsap.registerPlugin(useGSAP);
 
@@ -1542,5 +1543,10 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
     );
   }
 
-  return <div className="presentation-root">{deck}</div>;
+  return (
+    <div className="presentation-root">
+      {deck}
+      <OpeningSequence />
+    </div>
+  );
 }

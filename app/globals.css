@@ -58,6 +58,7 @@ button {
 }
 
 .presentation-root {
+  position: relative;
   width: 100vw;
   min-width: 1920px;
   height: 100vh;
