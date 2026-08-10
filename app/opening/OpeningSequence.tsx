@@ -30,6 +30,7 @@ import autoViolet from "./assets/auto-theme-violet.png";
 import assigningAudio from "./assets/audio/assigning.mp3?url";
 import executionAudio from "./assets/audio/execution.mp3?url";
 import ideaAudio from "./assets/audio/idea.mp3?url";
+import openingBgmAudio from "./assets/audio/opening-bgm.wav?url";
 import planningAudio from "./assets/audio/planning.mp3?url";
 import prioritizingAudio from "./assets/audio/prioritizing.mp3?url";
 import projectAudio from "./assets/audio/project.mp3?url";
@@ -65,6 +66,7 @@ import page19 from "./assets/ai-pages-19.png";
 import page20 from "./assets/ai-pages-20.png";
 import rocketLaunch from "./assets/rocket-launch.png";
 import { DecryptedText } from "./DecryptedText";
+import { isOpeningSkipShortcut } from "./opening-shortcuts";
 import { RotatingText } from "./RotatingText";
 import styles from "./opening-sequence.module.css";
 
@@ -245,9 +247,9 @@ const planIdeas = [
 
 const finalStatement = "You bring the idea...\nAI handles the execution.";
 
-const OPENING_BPM = 120;
+const OPENING_BPM = 60;
 const OPENING_BEAT_SECONDS = 60 / OPENING_BPM;
-const OPENING_GRID_SECONDS = OPENING_BEAT_SECONDS / 4;
+const OPENING_GRID_SECONDS = OPENING_BEAT_SECONDS / 8;
 const openingTimingAnchors = [
   [0, 0],
   [0.5, 0.5],
@@ -297,6 +299,9 @@ const mapOpeningTime = (sourceTime: number) => {
 const quantizeOpeningTime = (seconds: number) =>
   Math.round(seconds / OPENING_GRID_SECONDS) * OPENING_GRID_SECONDS;
 
+const BGM_VOLUME = 0.52;
+const BGM_DUCK_VOLUME = 0.24;
+
 const narrationSources = {
   project: projectAudio,
   planning: planningAudio,
@@ -319,11 +324,20 @@ const formatElapsedTime = (totalSeconds: number) => {
     .join(":");
 };
 
-export function OpeningSequence() {
+type OpeningSequenceProps = {
+  onComplete?: () => void;
+  onExitStart?: () => void;
+};
+
+export function OpeningSequence({
+  onComplete,
+  onExitStart,
+}: OpeningSequenceProps) {
   const [editorialPageIndex, setEditorialPageIndex] = useState(-1);
   const narrationRefs = useRef<
     Partial<Record<NarrationCue, HTMLAudioElement>>
   >({});
+  const bgmRef = useRef<HTMLAudioElement>(null);
   const rootRef = useRef<HTMLElement>(null);
   const startGateRef = useRef<HTMLButtonElement>(null);
   const cameraRef = useRef<HTMLDivElement>(null);
@@ -415,6 +429,7 @@ export function OpeningSequence() {
     () => {
       const root = rootRef.current;
       const startGate = startGateRef.current;
+      const bgm = bgmRef.current;
       const camera = cameraRef.current;
       const learnLayer = learnLayerRef.current;
       const learnWord = learnWordRef.current;
@@ -502,6 +517,7 @@ export function OpeningSequence() {
       if (
         !root ||
         !startGate ||
+        !bgm ||
         !camera ||
         !learnLayer ||
         !learnWord ||
@@ -850,6 +866,8 @@ export function OpeningSequence() {
         clipPath: "inset(0 100% 0 0)",
       });
       closingTypedText.textContent = "";
+      bgm.volume = BGM_VOLUME;
+      bgm.currentTime = 0;
       typedQuestionLines.forEach((line) => {
         line.textContent = "";
       });
@@ -916,7 +934,25 @@ export function OpeningSequence() {
 
         audio.currentTime = 0;
         activeNarration = audio;
+        gsap.to(bgm, {
+          volume: BGM_DUCK_VOLUME,
+          duration: 0.12,
+          ease: "power2.out",
+          overwrite: true,
+        });
+        const restoreBgm = () => {
+          if (activeNarration !== audio) return;
+          activeNarration = null;
+          gsap.to(bgm, {
+            volume: BGM_VOLUME,
+            duration: 0.28,
+            ease: "power2.out",
+            overwrite: true,
+          });
+        };
+        audio.addEventListener("ended", restoreBgm, { once: true });
         void audio.play().catch((error: unknown) => {
+          restoreBgm();
           console.warn(
             `[OpeningSequence] Narration playback was blocked: ${cue}`,
             error,
@@ -965,6 +1001,14 @@ export function OpeningSequence() {
         gsap.set(brandWord, {
           autoAlpha: 1,
           clipPath: "inset(0 0% 0 0)",
+        });
+        gsap.to(root, {
+          autoAlpha: 0,
+          delay: 1,
+          duration: 0.2,
+          ease: "power1.out",
+          onComplete,
+          onStart: onExitStart,
         });
         return;
       }
@@ -2256,7 +2300,17 @@ export function OpeningSequence() {
         );
       });
 
-      timeline.call(() => undefined, [], 60);
+      timeline.to(
+        root,
+        {
+          autoAlpha: 0,
+          duration: 0.75,
+          ease: "power2.inOut",
+          onComplete,
+          onStart: onExitStart,
+        },
+        60,
+      );
 
       const retimedAnimations = timeline
         .getChildren(false, true, true)
@@ -2290,9 +2344,48 @@ export function OpeningSequence() {
       timeline.time(0);
 
       let hasStarted = false;
+      let isSkipping = false;
+      const skipOpening = () => {
+        if (isSkipping) return;
+        isSkipping = true;
+        hasStarted = true;
+        timeline.pause(60, true);
+        stopNarration();
+        gsap.set(startGate, { autoAlpha: 0, display: "none" });
+        onExitStart?.();
+        gsap.to(bgm, {
+          volume: 0,
+          duration: 0.16,
+          ease: "power1.out",
+          overwrite: true,
+          onComplete: () => {
+            bgm.pause();
+            bgm.currentTime = 0;
+          },
+        });
+        gsap.to(root, {
+          autoAlpha: 0,
+          delay: 0.18,
+          duration: 0.36,
+          ease: "power2.inOut",
+          overwrite: "auto",
+          onComplete,
+        });
+      };
+      const onOpeningKeyDown = (event: KeyboardEvent) => {
+        if (!isOpeningSkipShortcut(event)) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        skipOpening();
+      };
       const startOpening = () => {
         if (hasStarted) return;
         hasStarted = true;
+        bgm.currentTime = 0;
+        bgm.volume = BGM_VOLUME;
+        void bgm.play().catch((error: unknown) => {
+          console.warn("[OpeningSequence] BGM playback was blocked.", error);
+        });
         unlockNarration();
         gsap.to(startGate, {
           autoAlpha: 0,
@@ -2305,6 +2398,9 @@ export function OpeningSequence() {
         timeline.play(0);
       };
 
+      window.addEventListener("keydown", onOpeningKeyDown, {
+        capture: true,
+      });
       window.addEventListener("pointerdown", startOpening, {
         once: true,
         capture: true,
@@ -2315,8 +2411,12 @@ export function OpeningSequence() {
       });
 
       return () => {
+        window.removeEventListener("keydown", onOpeningKeyDown, true);
         window.removeEventListener("pointerdown", startOpening, true);
         window.removeEventListener("keydown", startOpening, true);
+        gsap.killTweensOf(bgm);
+        bgm.pause();
+        bgm.currentTime = 0;
         stopNarration();
       };
     },
@@ -3190,6 +3290,7 @@ export function OpeningSequence() {
         />
       </div>
       <div hidden aria-hidden="true">
+        <audio ref={bgmRef} src={openingBgmAudio} preload="auto" />
         {(Object.entries(narrationSources) as [NarrationCue, string][]).map(
           ([cue, source]) => (
             <audio

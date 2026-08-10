@@ -31,6 +31,9 @@ test("server-renders the Vibe Coding presentation", async () => {
   assert.match(html, /<title>Vibe Coding — Field Notes<\/title>/i);
   assert.match(html, /AI 写得越来越快/);
   assert.match(html, /VIBE CODING \/ FIELD NOTES/);
+  assert.match(html, /探索加速/);
+  assert.match(html, /失控风险/);
+  assert.match(html, /重建控制/);
   assert.match(html, /把执行交给 AI，把工程判断留在人手里/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });

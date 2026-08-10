@@ -93,6 +93,35 @@ button {
   );
 }
 
+.deck-canvas[data-slide-id="control"] {
+  background:
+    radial-gradient(
+      ellipse at 40% 48%,
+      rgba(20, 30, 33, 0.38),
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse at 84% 52%,
+      rgba(14, 24, 27, 0.3),
+      transparent 42%
+    ),
+    #080e12;
+}
+
+.deck-canvas[data-slide-id="control"]::before {
+  display: none;
+}
+
+.deck-canvas[data-slide-id="control"] .deck-header,
+.deck-canvas[data-slide-id="control"] .deck-footer,
+.deck-canvas[data-slide-id="control"] .frame-rail {
+  display: none;
+}
+
+.deck-canvas[data-slide-id="control"] .slide-host {
+  inset: 0;
+}
+
 .deck-header,
 .deck-footer {
   position: absolute;
@@ -149,6 +178,10 @@ button {
   display: none;
 }
 
+.presentation-slide:first-child {
+  padding: 0;
+}
+
 .slide-heading {
   position: absolute;
   top: 22px;
@@ -162,8 +195,7 @@ button {
   border-bottom: 1px solid var(--line);
 }
 
-.slide-heading span,
-.eyebrow {
+.slide-heading span {
   color: var(--accent);
   font-family: var(--font-ui);
   font-size: 14px;
@@ -189,7 +221,7 @@ button {
 }
 
 .presentation-slide:first-child .slide-visual {
-  top: 34px;
+  inset: 0;
 }
 
 .frame-rail {
@@ -376,150 +408,205 @@ button {
 /* 00 / Cover */
 
 .cover-layout {
-  display: grid;
-  grid-template-columns: 8fr 4fr;
-  gap: 90px;
+  position: relative;
   height: 100%;
-  align-items: center;
+  overflow: hidden;
+}
+
+.cover-copy {
+  position: absolute;
+  top: 382px;
+  left: 100px;
 }
 
 .cover-copy h1 {
-  margin: 20px 0 34px;
-  font-family: var(--font-ui);
-  font-size: 82px;
-  font-weight: 400;
-  line-height: 1.03;
-  letter-spacing: -0.055em;
-}
-
-.cover-copy h1 em {
-  color: var(--accent);
-  font-style: normal;
-}
-
-.cover-subtitle {
-  max-width: 720px;
-  margin: 0;
-  color: var(--body-text);
-  font-size: 26px;
-  line-height: 1.6;
-}
-
-.control-map {
-  position: relative;
-  height: 620px;
-  border-bottom: 1px solid var(--line);
-  border-left: 1px solid var(--line);
-  background:
-    linear-gradient(rgba(59, 65, 64, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 65, 64, 0.08) 1px, transparent 1px);
-  background-size: 64px 64px;
-}
-
-.axis {
-  position: absolute;
-  color: var(--muted);
-  font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-}
-
-.axis--x {
-  right: 0;
-  bottom: -28px;
-}
-
-.axis--y {
-  top: 0;
-  left: -76px;
-  transform: rotate(-90deg) translateX(-100%);
-  transform-origin: left top;
-}
-
-.map-point {
-  position: absolute;
   display: grid;
-  grid-template-columns: 14px 1fr;
-  gap: 2px 12px;
+  gap: 56px;
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 66px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.cover-copy h1 span:last-child {
+  letter-spacing: -0.065em;
+}
+
+.cover-signature {
+  position: absolute;
+  top: 738px;
+  left: 100px;
+  display: flex;
+  height: 60px;
   align-items: center;
+  padding-left: 70px;
+  color: var(--muted);
+}
+
+.cover-signature::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 62px;
+  content: "";
+  border-top: 2px solid rgba(202, 205, 199, 0.68);
+  border-left: 2px solid rgba(202, 205, 199, 0.68);
+}
+
+.cover-signature__mark {
+  position: absolute;
+  top: 27px;
+  left: 20px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
+  place-items: center;
+}
+
+.cover-signature p {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 22px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.control-chart {
+  position: relative;
+  position: absolute;
+  top: 181px;
+  left: 1007px;
+  width: 870px;
+  height: 704px;
   font-family: var(--font-ui);
 }
 
-.map-point > span {
-  grid-row: span 2;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--text);
+.control-chart__canvas,
+.control-chart__layer {
+  position: absolute;
+  inset: 0;
+  width: 870px;
+  height: 704px;
 }
 
-.map-point b {
-  font-size: 18px;
+.control-chart__canvas {
+  display: block;
+}
+
+.control-chart__layer {
+  will-change: clip-path;
+}
+
+.control-chart__axis {
+  position: absolute;
+  z-index: 4;
+  color: rgba(205, 207, 202, 0.78);
+  font-family: var(--font-ui);
+  font-size: 21px;
   font-weight: 500;
+  letter-spacing: 0.07em;
 }
 
-.map-point small {
+.control-chart__axis--speed {
+  top: 14px;
+  left: 46px;
+}
+
+.control-chart__axis--control {
+  top: 473px;
+  left: 744px;
+}
+
+.risk-marker {
+  position: absolute;
+  top: 298px;
+  left: 351px;
+  z-index: 5;
+  display: grid;
+  width: 88px;
+  height: 88px;
+  color: var(--danger);
+  place-items: center;
+}
+
+.risk-marker__warning {
+  position: absolute;
+  inset: 25px;
+}
+
+.chart-stage {
+  position: absolute;
+  top: 566px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 18px;
+  width: 245px;
   color: var(--muted);
-  font-size: 11px;
+}
+
+.chart-stage--explore {
+  left: 32px;
+}
+
+.chart-stage--risk {
+  left: 311px;
+}
+
+.chart-stage--control {
+  left: 590px;
+}
+
+.chart-stage > svg {
+  margin-top: 2px;
+}
+
+.chart-stage > div {
+  display: grid;
+}
+
+.chart-stage strong {
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 400;
   letter-spacing: 0.08em;
 }
 
-.map-point--manual {
-  bottom: 108px;
-  left: 42px;
+.chart-stage > div > span {
+  margin-top: 8px;
+  color: rgba(168, 170, 166, 0.72);
+  font-family: var(--font-body);
+  font-size: 18px;
+  letter-spacing: 0.08em;
 }
 
-.map-point--loss {
-  top: 218px;
-  left: 245px;
+.stage-dots {
+  display: flex;
+  gap: 13px;
+  margin-top: 40px;
+  margin-left: -48px;
 }
 
-.map-point--loss > span {
-  background: var(--danger);
+.stage-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: rgba(117, 126, 126, 0.55);
 }
 
-.map-point--control {
-  top: 74px;
-  right: 8px;
-}
-
-.map-point--control > span {
+.chart-stage--explore .stage-dots span[data-active="true"],
+.chart-stage--control .stage-dots span[data-active="true"] {
   background: var(--accent);
-  box-shadow: 0 0 10px rgba(197, 255, 61, 0.42);
 }
 
-.map-path {
-  position: absolute;
-  height: 2px;
-  transform-origin: left center;
-}
-
-.map-path span {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.map-path--loss {
-  bottom: 128px;
-  left: 52px;
-  width: 236px;
-  rotate: -36deg;
-}
-
-.map-path--loss span {
+.chart-stage--risk .stage-dots span[data-active="true"] {
   background: var(--danger);
-}
-
-.map-path--control {
-  top: 192px;
-  left: 270px;
-  width: 205px;
-  rotate: -40deg;
-}
-
-.map-path--control span {
-  background: var(--accent);
 }
 
 /* 01 / Manual */

@@ -1,6 +1,14 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
+import {
+  IconAlertTriangle,
+  IconCrosshair,
+  IconFocusCentered,
+  IconGridDots,
+  IconPlus,
+  IconScan,
+} from "@tabler/icons-react";
 import gsap from "gsap";
 import {
   type CSSProperties,
@@ -12,11 +20,14 @@ import {
   useState,
 } from "react";
 import { OpeningSequence } from "./opening/OpeningSequence";
+import { syncPresentationHash } from "./presentation-location";
 
 gsap.registerPlugin(useGSAP);
 
 type PresentationMode = "audience" | "presenter";
-type MotionKind = "rise" | "grow-x" | "grow-y" | "fade";
+type MotionKind = "rise" | "grow-x" | "grow-y" | "fade" | "wipe";
+
+let audienceOpeningHasCompleted = false;
 
 type SlideDefinition = {
   id: string;
@@ -33,6 +44,7 @@ type RevealProps = {
   children: ReactNode;
   className?: string;
   motion?: MotionKind;
+  wipeFrom?: number;
 };
 
 function Reveal({
@@ -40,14 +52,209 @@ function Reveal({
   children,
   className = "",
   motion = "rise",
+  wipeFrom,
 }: RevealProps) {
   return (
     <div
       className={className}
       data-motion={motion}
       data-step={step}
+      data-wipe-from={wipeFrom}
     >
       {children}
+    </div>
+  );
+}
+
+const CONTROL_CHART_WIDTH = 870;
+const CONTROL_CHART_HEIGHT = 704;
+
+const controlChartPoints = {
+  explore: [
+    [12, 508],
+    [96, 422],
+    [127, 381],
+    [157, 338],
+    [202, 308],
+    [242, 260],
+    [297, 229],
+  ],
+  risk: [
+    [297, 229],
+    [362, 251],
+    [391, 307],
+    [433, 340],
+    [474, 369],
+  ],
+  control: [
+    [474, 369],
+    [512, 382],
+    [548, 362],
+    [587, 322],
+    [631, 276],
+    [679, 228],
+    [731, 178],
+    [787, 157],
+    [852, 92],
+  ],
+} satisfies Record<string, [number, number][]>;
+
+function drawControlPath(
+  context: CanvasRenderingContext2D,
+  points: [number, number][],
+  color: string,
+  options: { arrow?: boolean; skipFirstMarker?: boolean } = {},
+) {
+  context.save();
+  context.strokeStyle = color;
+  context.lineWidth = 3;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.beginPath();
+  points.forEach(([x, y], index) => {
+    if (index === 0) context.moveTo(x, y);
+    else context.lineTo(x, y);
+  });
+  context.stroke();
+
+  const lastMarkerIndex = options.arrow ? points.length - 2 : points.length - 1;
+  points.forEach(([x, y], index) => {
+    if ((options.skipFirstMarker && index === 0) || index > lastMarkerIndex) {
+      return;
+    }
+    context.beginPath();
+    context.arc(x, y, 4.5, 0, Math.PI * 2);
+    context.fillStyle = "#0a1013";
+    context.fill();
+    context.lineWidth = 2.5;
+    context.strokeStyle = color;
+    context.stroke();
+  });
+
+  if (options.arrow) {
+    const [endX, endY] = points.at(-1) ?? [0, 0];
+    const [previousX, previousY] = points.at(-2) ?? [0, 0];
+    const angle = Math.atan2(endY - previousY, endX - previousX);
+    const arrowSize = 19;
+    context.beginPath();
+    context.moveTo(
+      endX - arrowSize * Math.cos(angle - Math.PI / 5),
+      endY - arrowSize * Math.sin(angle - Math.PI / 5),
+    );
+    context.lineTo(endX, endY);
+    context.lineTo(
+      endX - arrowSize * Math.cos(angle + Math.PI / 5),
+      endY - arrowSize * Math.sin(angle + Math.PI / 5),
+    );
+    context.lineWidth = 4;
+    context.strokeStyle = color;
+    context.stroke();
+  }
+  context.restore();
+}
+
+function ControlChartCanvas({
+  layer,
+}: {
+  layer: "base" | "explore" | "risk" | "control";
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = CONTROL_CHART_WIDTH * pixelRatio;
+    canvas.height = CONTROL_CHART_HEIGHT * pixelRatio;
+    canvas.style.width = `${CONTROL_CHART_WIDTH}px`;
+    canvas.style.height = `${CONTROL_CHART_HEIGHT}px`;
+
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.scale(pixelRatio, pixelRatio);
+
+    if (layer === "base") {
+      context.save();
+      context.strokeStyle = "rgba(76, 91, 95, 0.16)";
+      context.lineWidth = 1;
+      for (let x = 12; x <= 852; x += 48) {
+        context.beginPath();
+        context.moveTo(x, 12);
+        context.lineTo(x, 508);
+        context.stroke();
+      }
+      for (let y = 28; y <= 508; y += 48) {
+        context.beginPath();
+        context.moveTo(12, y);
+        context.lineTo(858, y);
+        context.stroke();
+      }
+
+      context.strokeStyle = "rgba(186, 190, 185, 0.82)";
+      context.lineWidth = 1.5;
+      context.beginPath();
+      context.moveTo(12, 508);
+      context.lineTo(12, 12);
+      context.moveTo(12, 12);
+      context.lineTo(2, 24);
+      context.moveTo(12, 12);
+      context.lineTo(22, 24);
+      context.moveTo(12, 508);
+      context.lineTo(858, 508);
+      context.moveTo(858, 508);
+      context.lineTo(846, 498);
+      context.moveTo(858, 508);
+      context.lineTo(846, 518);
+      context.stroke();
+
+      context.setLineDash([7, 7]);
+      context.strokeStyle = "rgba(168, 170, 166, 0.44)";
+      context.lineWidth = 1;
+      context.beginPath();
+      context.moveTo(12, 341);
+      context.lineTo(858, 341);
+      context.moveTo(266, 105);
+      context.lineTo(266, 696);
+      context.moveTo(545, 105);
+      context.lineTo(545, 696);
+      context.stroke();
+      context.restore();
+    } else if (layer === "explore") {
+      drawControlPath(context, controlChartPoints.explore, "#e8e7e0");
+    } else if (layer === "risk") {
+      drawControlPath(context, controlChartPoints.risk, "#ff7f62", {
+        skipFirstMarker: true,
+      });
+    } else {
+      drawControlPath(context, controlChartPoints.control, "#c5ff3d", {
+        arrow: true,
+        skipFirstMarker: true,
+      });
+    }
+  }, [layer]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="control-chart__canvas"
+      aria-hidden="true"
+    />
+  );
+}
+
+function StageDots({
+  active,
+  count = 5,
+}: {
+  active: number[];
+  count?: number;
+}) {
+  return (
+    <div className="stage-dots" aria-hidden="true">
+      {Array.from({ length: count }, (_, index) => (
+        <span key={index} data-active={active.includes(index)} />
+      ))}
     </div>
   );
 }
@@ -94,7 +301,7 @@ const slides: SlideDefinition[] = [
     id: "control",
     section: "CONTROL",
     title: "控制权",
-    conclusion: "从手动但可控，到自动且失控，再重新建立控制。",
+    conclusion: "这不是一场模型介绍，而是一段重新获得代码库控制权的经历。",
     frameCount: 4,
     notes: [
       "先讲最初的复制粘贴和 VDI 手敲代码。",
@@ -105,53 +312,87 @@ const slides: SlideDefinition[] = [
     visual: (
       <div className="cover-layout">
         <div className="cover-copy">
-          <p className="eyebrow">VIBE CODING / FIELD NOTES</p>
           <h1>
-            AI 写得越来越快
-            <br />
-            我怎样没有失去
-            <br />
-            <em>对代码库的控制</em>
+            <span>AI 写得越来越快</span>
+            <span>我怎样没有失去对代码库的控制</span>
           </h1>
-          <p className="cover-subtitle">
-            一段从手动执行、自动失控，到重新建立工程边界的经历。
-          </p>
         </div>
-        <div className="control-map" aria-label="速度与控制关系图">
-          <div className="axis axis--x">
-            <span>执行速度</span>
-          </div>
-          <div className="axis axis--y">
-            <span>控制程度</span>
-          </div>
-          <Reveal step={1} className="map-point map-point--manual">
-            <span />
-            <b>慢 / 可控</b>
-            <small>MANUAL</small>
+        <div className="cover-signature">
+          <span className="cover-signature__mark">
+            <IconPlus size={27} stroke={1.7} aria-hidden="true" />
+          </span>
+          <p>VIBE CODING / FIELD NOTES</p>
+        </div>
+        <div
+          className="control-chart"
+          role="img"
+          aria-label="速度提升后控制力先下降，再通过工程判断重新建立控制"
+        >
+          <ControlChartCanvas layer="base" />
+          <span className="control-chart__axis control-chart__axis--speed">
+            SPEED
+          </span>
+          <span className="control-chart__axis control-chart__axis--control">
+            CONTROL
+          </span>
+          <Reveal
+            step={1}
+            className="control-chart__layer"
+            motion="wipe"
+            wipeFrom={1}
+          >
+            <ControlChartCanvas layer="explore" />
           </Reveal>
           <Reveal
             step={2}
-            className="map-path map-path--loss"
-            motion="grow-x"
+            className="control-chart__layer"
+            motion="wipe"
+            wipeFrom={34}
           >
-            <span />
-          </Reveal>
-          <Reveal step={2} className="map-point map-point--loss">
-            <span />
-            <b>快 / 失控</b>
-            <small>DIRECT AGENT</small>
+            <ControlChartCanvas layer="risk" />
           </Reveal>
           <Reveal
             step={3}
-            className="map-path map-path--control"
-            motion="grow-x"
+            className="control-chart__layer"
+            motion="wipe"
+            wipeFrom={53}
           >
-            <span />
+            <ControlChartCanvas layer="control" />
           </Reveal>
-          <Reveal step={3} className="map-point map-point--control">
-            <span />
-            <b>快 / 重新控制</b>
-            <small>RISK-AWARE</small>
+
+          <Reveal step={2} className="risk-marker" motion="fade">
+            <IconScan size={88} stroke={1.2} aria-hidden="true" />
+            <IconAlertTriangle
+              className="risk-marker__warning"
+              size={37}
+              stroke={1.7}
+              aria-hidden="true"
+            />
+          </Reveal>
+
+          <Reveal step={1} className="chart-stage chart-stage--explore">
+            <IconGridDots size={43} stroke={1.5} aria-hidden="true" />
+            <div>
+              <strong>探索加速</strong>
+              <span>速度提升</span>
+              <StageDots active={[0, 1]} count={4} />
+            </div>
+          </Reveal>
+          <Reveal step={2} className="chart-stage chart-stage--risk">
+            <IconCrosshair size={43} stroke={1.4} aria-hidden="true" />
+            <div>
+              <strong>失控风险</strong>
+              <span>控制力下降</span>
+              <StageDots active={[2]} />
+            </div>
+          </Reveal>
+          <Reveal step={3} className="chart-stage chart-stage--control">
+            <IconFocusCentered size={43} stroke={1.5} aria-hidden="true" />
+            <div>
+              <strong>重建控制</strong>
+              <span>稳定与判断</span>
+              <StageDots active={[2, 3]} />
+            </div>
           </Reveal>
         </div>
       </div>
@@ -1067,6 +1308,7 @@ function Slide({
       const riseItems = selector<HTMLElement>('[data-motion="rise"]');
       const growXItems = selector<HTMLElement>('[data-motion="grow-x"]');
       const growYItems = selector<HTMLElement>('[data-motion="grow-y"]');
+      const wipeItems = selector<HTMLElement>('[data-motion="wipe"]');
 
       gsap.set(revealItems, { autoAlpha: 0 });
       gsap.set(riseItems, { y: 14, scale: 0.98 });
@@ -1077,6 +1319,12 @@ function Slide({
       gsap.set(growYItems, {
         scaleY: 0,
         transformOrigin: "center bottom",
+      });
+      gsap.set(wipeItems, {
+        clipPath: (_, element: HTMLElement) => {
+          const start = Number(element.dataset.wipeFrom ?? 0);
+          return `inset(0 ${100 - start}% 0 ${start}%)`;
+        },
       });
 
       const timeline = gsap.timeline({
@@ -1101,6 +1349,9 @@ function Slide({
         );
         const stepFade = stepItems.filter(
           (element) => element.dataset.motion === "fade",
+        );
+        const stepWipe = stepItems.filter(
+          (element) => element.dataset.motion === "wipe",
         );
         const position = timeline.duration();
 
@@ -1153,6 +1404,19 @@ function Slide({
             {
               autoAlpha: 1,
               duration: 0.28,
+            },
+            position,
+          );
+        }
+        if (stepWipe.length > 0) {
+          timeline.to(
+            stepWipe,
+            {
+              clipPath: (_, element: HTMLElement) => {
+                const start = Number(element.dataset.wipeFrom ?? 0);
+                return `inset(0 0% 0 ${start}%)`;
+              },
+              duration: 0.64,
             },
             position,
           );
@@ -1233,6 +1497,9 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
   const [pageIndex, setPageIndex] = useState(0);
   const [frames, setFrames] = useState(() => slides.map(() => 0));
   const [elapsed, setElapsed] = useState(0);
+  const [openingVisible, setOpeningVisible] = useState(
+    () => mode === "audience" && !audienceOpeningHasCompleted,
+  );
   const channelRef = useRef<BroadcastChannel | null>(null);
   const sourceIdRef = useRef("");
 
@@ -1336,7 +1603,7 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
   }, []);
 
   useEffect(() => {
-    window.location.hash = `/page/${pageIndex}/frame/${currentFrame}`;
+    syncPresentationHash(window, pageIndex, currentFrame);
     sessionStorage.setItem(
       "vibe-presentation-state",
       JSON.stringify({ pageIndex, frames }),
@@ -1362,8 +1629,19 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
     });
   }, [pageIndex]);
 
+  const prepareOpeningExit = useCallback(() => {
+    setPageIndex(0);
+    setFrames(slides.map(() => 0));
+  }, []);
+
+  const completeOpening = useCallback(() => {
+    audienceOpeningHasCompleted = true;
+    setOpeningVisible(false);
+  }, []);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (mode === "audience" && openingVisible) return;
       if (event.repeat) return;
       const target = event.target as HTMLElement | null;
       if (
@@ -1391,7 +1669,7 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [moveFrame, movePage]);
+  }, [mode, moveFrame, movePage, openingVisible]);
 
   const frameDots = useMemo(
     () =>
@@ -1406,7 +1684,12 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
   );
 
   const deck = (
-    <div className="deck-canvas">
+    <div
+      className="deck-canvas"
+      data-slide-id={currentSlide.id}
+      aria-hidden={mode === "audience" && openingVisible ? true : undefined}
+      inert={mode === "audience" && openingVisible}
+    >
       <header className="deck-header">
         <span>VIBE CODING / FIELD NOTES</span>
         <div>
@@ -1546,7 +1829,12 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
   return (
     <div className="presentation-root">
       {deck}
-      <OpeningSequence />
+      {openingVisible ? (
+        <OpeningSequence
+          onComplete={completeOpening}
+          onExitStart={prepareOpeningExit}
+        />
+      ) : null}
     </div>
   );
 }
