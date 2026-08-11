@@ -30,7 +30,7 @@ import autoViolet from "./assets/auto-theme-violet.png";
 import assigningAudio from "./assets/audio/assigning.mp3?url";
 import executionAudio from "./assets/audio/execution.mp3?url";
 import ideaAudio from "./assets/audio/idea.mp3?url";
-import openingBgmAudio from "./assets/audio/opening-bgm.wav?url";
+import openingBgmAudio from "./assets/audio/Neon Horizon.mp3?url";
 import planningAudio from "./assets/audio/planning.mp3?url";
 import prioritizingAudio from "./assets/audio/prioritizing.mp3?url";
 import projectAudio from "./assets/audio/project.mp3?url";
@@ -299,8 +299,10 @@ const mapOpeningTime = (sourceTime: number) => {
 const quantizeOpeningTime = (seconds: number) =>
   Math.round(seconds / OPENING_GRID_SECONDS) * OPENING_GRID_SECONDS;
 
-const BGM_VOLUME = 0.52;
-const BGM_DUCK_VOLUME = 0.24;
+const BGM_VOLUME = 0.2;
+const BGM_DUCK_VOLUME = 0.07;
+const BGM_CLIP_SECONDS = 60;
+const BGM_FADE_SECONDS = 8;
 
 const narrationSources = {
   project: projectAudio,
@@ -912,6 +914,7 @@ export function OpeningSequence({
       renderOrbit();
 
       let activeNarration: HTMLAudioElement | null = null;
+      let bgmFadingOut = false;
       const stopNarration = () => {
         Object.values(narrationRefs.current).forEach((audio) => {
           if (!audio) return;
@@ -943,6 +946,7 @@ export function OpeningSequence({
         const restoreBgm = () => {
           if (activeNarration !== audio) return;
           activeNarration = null;
+          if (bgmFadingOut) return;
           gsap.to(bgm, {
             volume: BGM_VOLUME,
             duration: 0.28,
@@ -2301,6 +2305,24 @@ export function OpeningSequence({
       });
 
       timeline.to(
+        bgm,
+        {
+          volume: 0,
+          duration: BGM_FADE_SECONDS,
+          ease: "none",
+          overwrite: true,
+          onStart: () => {
+            bgmFadingOut = true;
+          },
+          onComplete: () => {
+            bgm.pause();
+            bgm.currentTime = 0;
+          },
+        },
+        BGM_CLIP_SECONDS - BGM_FADE_SECONDS,
+      );
+
+      timeline.to(
         root,
         {
           autoAlpha: 0,
@@ -2309,7 +2331,7 @@ export function OpeningSequence({
           onComplete,
           onStart: onExitStart,
         },
-        60,
+        BGM_CLIP_SECONDS,
       );
 
       const retimedAnimations = timeline
@@ -2349,7 +2371,7 @@ export function OpeningSequence({
         if (isSkipping) return;
         isSkipping = true;
         hasStarted = true;
-        timeline.pause(60, true);
+        timeline.pause(BGM_CLIP_SECONDS, true);
         stopNarration();
         gsap.set(startGate, { autoAlpha: 0, display: "none" });
         onExitStart?.();
@@ -2381,6 +2403,7 @@ export function OpeningSequence({
       const startOpening = () => {
         if (hasStarted) return;
         hasStarted = true;
+        bgmFadingOut = false;
         bgm.currentTime = 0;
         bgm.volume = BGM_VOLUME;
         void bgm.play().catch((error: unknown) => {
