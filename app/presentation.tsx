@@ -300,13 +300,13 @@ const slides: SlideDefinition[] = [
     id: "graph-cover",
     section: "第一部分 / 趋势",
     title: "从 Loop 到 Graph",
-    conclusion: "Agent 工程的重心，正在从单次调用迁移到系统协作。",
+    conclusion: "Agent 工程的重心，正在从单个执行循环迁移到多执行单元协作。",
     frameCount: 4,
     notes: [
-      "第一部分先看当前 Agent 工程正在发生什么变化。",
-      "模型能力增强以后，一个 Agent 已经可以持续完成越来越长的任务。",
-      "新的瓶颈开始出现在多个执行单元之间：依赖、并行、验证和恢复。",
-      "Graph Engineering 是这个变化的最新名字。",
+      "第一部分先看当前 Agent 工程正在发生什么变化：一个 Loop 已经不再是全部。",
+      "Graph 把规划后的任务分给多个执行单元，并明确它们的并行与依赖关系。",
+      "结果在验证节点汇合，通过才完成；验证不只是流程的最后一步，而是系统的门。",
+      "失败只重试相关节点，高风险则把控制权交给人；Graph Engineering 设计的正是这些关系。",
     ],
     visual: (
       <div className="graph-cover-layout">
@@ -317,31 +317,71 @@ const slides: SlideDefinition[] = [
             <br />
             到 <b>Graph</b>
           </h1>
-          <p>Agent 工程的重心，正在从单次调用迁移到系统协作。</p>
+          <p>Agent 工程的重心，正在从单个执行循环迁移到多执行单元协作。</p>
         </div>
         <div className="graph-cover-network" aria-hidden="true">
-          <div className="graph-cover-network__hub">
-            <span>控制图</span>
-            <b>GRAPH</b>
+          <div className="graph-cover-network__header">
+            <span>EXECUTION GRAPH</span>
+            <b>依赖 / 并行 / 验证 / 交接</b>
           </div>
-          <Reveal step={1} className="graph-cover-network__node graph-cover-network__node--plan">
-            <span>01</span>
+          <svg className="graph-cover-edges" viewBox="0 0 790 730">
+            <defs>
+              <marker id="graph-cover-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+              <marker id="graph-cover-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+              <marker id="graph-cover-arrow-danger" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+            </defs>
+            <path className="graph-cover-edge" d="M119 360 H145" />
+            <g data-step="1" data-motion="fade">
+              <path className="graph-cover-edge" d="M270 360 C294 360 294 228 320 228" />
+              <path className="graph-cover-edge" d="M270 360 C294 360 294 498 320 498" />
+              <text className="graph-cover-edge-label" x="274" y="345">并行</text>
+            </g>
+            <g data-step="2" data-motion="fade">
+              <path className="graph-cover-edge" d="M465 228 C490 228 490 360 510 360" />
+              <path className="graph-cover-edge" d="M465 498 C490 498 490 360 510 360" />
+              <path className="graph-cover-edge graph-cover-edge--accent" d="M640 350 C657 328 659 243 670 216" />
+              <text className="graph-cover-edge-label" x="468" y="345">汇合</text>
+              <text className="graph-cover-edge-label graph-cover-edge-label--accent" x="646" y="287">通过</text>
+            </g>
+            <g data-step="3" data-motion="fade">
+              <path className="graph-cover-edge graph-cover-edge--danger" d="M640 372 C656 394 648 454 655 484" />
+              <path className="graph-cover-edge graph-cover-edge--retry" d="M575 414 C575 604 392 604 392 546" />
+              <text className="graph-cover-edge-label graph-cover-edge-label--danger" x="644" y="429">高风险</text>
+              <text className="graph-cover-edge-label" x="451" y="628">失败 / 局部重试</text>
+            </g>
+          </svg>
+          <div className="graph-cover-node graph-cover-node--goal">
+            <span>GOAL</span>
+            <b>目标</b>
+          </div>
+          <div className="graph-cover-node graph-cover-node--plan">
+            <span>PLAN</span>
             <b>规划</b>
-          </Reveal>
-          <Reveal step={1} className="graph-cover-network__node graph-cover-network__node--worker-a">
-            <span>02</span>
+          </div>
+          <Reveal step={1} className="graph-cover-node graph-cover-node--worker-a">
+            <span>WORKER</span>
             <b>执行 A</b>
           </Reveal>
-          <Reveal step={2} className="graph-cover-network__node graph-cover-network__node--worker-b">
-            <span>03</span>
+          <Reveal step={1} className="graph-cover-node graph-cover-node--worker-b">
+            <span>WORKER</span>
             <b>执行 B</b>
           </Reveal>
-          <Reveal step={2} className="graph-cover-network__node graph-cover-network__node--verify">
-            <span>04</span>
+          <Reveal step={2} className="graph-cover-node graph-cover-node--verify">
+            <span>VERIFIER</span>
             <b>验证</b>
           </Reveal>
-          <Reveal step={3} className="graph-cover-network__node graph-cover-network__node--human">
-            <span>05</span>
+          <Reveal step={2} className="graph-cover-node graph-cover-node--done">
+            <span>PASS</span>
+            <b>完成</b>
+          </Reveal>
+          <Reveal step={3} className="graph-cover-node graph-cover-node--human">
+            <span>HANDOFF</span>
             <b>人工决策</b>
           </Reveal>
         </div>
@@ -402,52 +442,82 @@ const slides: SlideDefinition[] = [
   {
     id: "loop-to-graph",
     section: "趋势 / 协作",
-    title: "Loop 解决局部收敛，Graph 解决全局协作",
-    conclusion: "实际的复杂 Agent 系统，通常是一张由多个 Loop 组成的图。",
+    title: "Loop 负责收敛，Graph 负责协作",
+    conclusion: "Graph 不替代 Loop：Graph 组织协作，Loop 负责收敛。",
     frameCount: 4,
     notes: [
-      "单 Agent Loop 根据真实反馈持续执行，很适合开放探索。",
-      "当任务需要并行、依赖、局部恢复和人工审批时，复杂度开始溢出一个循环。",
-      "Graph 显式组织多个 Worker、Verifier、工具和人工节点。",
-      "两者不是替代关系：Graph 中的每个 Worker 仍然可以运行自己的 Loop。",
+      "一个 Loop 围绕一个目标计划、执行、观察和验证，根据反馈持续收敛。",
+      "当尺度扩大，一个目标变成多个角色，整体重跑变成局部恢复，继续执行也可能变成人工交接。",
+      "Graph 负责组织这些执行单元之间的依赖和汇合，而其中的 Worker 仍然运行自己的 Loop。",
+      "所以两者不是替代关系：Graph 组织协作，Loop 负责收敛。",
     ],
     visual: (
       <div className="loop-graph-layout">
         <div className="loop-panel">
-          <span className="loop-graph-kicker">局部 / 一个目标</span>
+          <span className="loop-graph-kicker">一个执行单元 / 一个目标</span>
+          <strong className="loop-panel__title">LOOP</strong>
           <div className="loop-cycle">
-            <b>计划</b>
-            <b>执行</b>
-            <b>观察</b>
-            <b>验证</b>
-            <i aria-hidden="true" />
+            <svg viewBox="0 0 420 250" aria-hidden="true">
+              <defs>
+                <marker id="loop-cycle-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" />
+                </marker>
+              </defs>
+              <path d="M166 55 H250" />
+              <path d="M312 91 V155" />
+              <path d="M250 195 H166" />
+              <path d="M104 155 V91" />
+            </svg>
+            <b className="loop-cycle__plan">计划</b>
+            <b className="loop-cycle__execute">执行</b>
+            <b className="loop-cycle__observe">观察</b>
+            <b className="loop-cycle__verify">验证</b>
           </div>
-          <p>失败后调整，再进入下一轮</p>
+          <p>根据真实反馈，调整下一步行动</p>
         </div>
-        <Reveal step={1} className="coordination-pressure">
-          {[
-            "怎样真正并行？",
-            "谁必须等待谁？",
-            "失败以后重跑哪里？",
-            "何时把控制权交给人？",
-          ].map((item) => (
-            <span key={item}>{item}</span>
-          ))}
+        <Reveal step={1} className="coordination-shift">
+          <span>当尺度扩大</span>
+          <div><b>一个目标</b><i>→</i><strong>多个角色</strong></div>
+          <div><b>整体重跑</b><i>→</i><strong>局部恢复</strong></div>
+          <div><b>自己判断</b><i>→</i><strong>显式交接</strong></div>
         </Reveal>
         <Reveal step={2} className="graph-panel">
-          <span className="loop-graph-kicker">全局 / 多个执行单元</span>
-          <div className="mini-graph">
-            <b className="mini-graph__plan">规划</b>
-            <b className="mini-graph__worker-a">Worker A</b>
-            <b className="mini-graph__worker-b">Worker B</b>
-            <b className="mini-graph__verify">验证</b>
-            <b className="mini-graph__human">人工</b>
+          <span className="loop-graph-kicker">系统级 / 多个执行单元</span>
+          <strong className="graph-panel__title">GRAPH OF LOOPS</strong>
+          <div className="graph-loops-map">
+            <svg viewBox="0 0 560 340" aria-hidden="true">
+              <defs>
+                <marker id="graph-loop-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" />
+                </marker>
+                <marker id="graph-loop-arrow-danger" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" />
+                </marker>
+              </defs>
+              <path d="M280 64 C280 90 142 78 142 116" />
+              <path d="M280 64 C280 90 418 78 418 116" />
+              <path d="M142 226 C142 262 235 248 244 278" />
+              <path d="M418 226 C418 262 325 248 316 278" />
+              <path className="graph-loops-map__edge--danger" d="M350 300 H448" />
+            </svg>
+            <div className="graph-loops-map__plan">规划</div>
+            <div className="worker-loop worker-loop--a">
+              <span>WORKER A</span>
+              <b>↻ LOOP</b>
+              <small>计划 · 执行 · 观察 · 验证</small>
+            </div>
+            <div className="worker-loop worker-loop--b">
+              <span>WORKER B</span>
+              <b>↻ LOOP</b>
+              <small>计划 · 执行 · 观察 · 验证</small>
+            </div>
+            <div className="graph-loops-map__verify">汇合 / 验证</div>
+            <div className="graph-loops-map__human">人工交接</div>
           </div>
-          <p>依赖、并行、汇合、恢复和交接</p>
         </Reveal>
-        <Reveal step={3} className="graph-of-loops" motion="fade">
-          <span>Graph of Loops</span>
-          <strong>Graph 组织 Loop，Loop 负责局部收敛</strong>
+        <Reveal step={3} className="loop-graph-thesis" motion="fade">
+          <span>不是替代关系</span>
+          <strong>Graph 组织协作，Loop 负责收敛</strong>
         </Reveal>
       </div>
     ),
@@ -455,7 +525,7 @@ const slides: SlideDefinition[] = [
   {
     id: "graph-anatomy",
     section: "趋势 / 执行图",
-    title: "一张执行图，至少要回答四个问题",
+    title: "一张执行图，要让四件事显式",
     conclusion: "重点不是画出节点和边，而是让控制关系显式、可检查。",
     frameCount: 5,
     notes: [
@@ -468,37 +538,97 @@ const slides: SlideDefinition[] = [
     visual: (
       <div className="graph-anatomy-layout">
         <div className="graph-anatomy-map">
-          <div className="anatomy-node anatomy-node--source">请求</div>
-          <div className="anatomy-node anatomy-node--worker">Agent</div>
-          <div className="anatomy-node anatomy-node--tool">工具</div>
-          <div className="anatomy-node anatomy-node--verify">验证</div>
-          <div className="anatomy-node anatomy-node--human">人工</div>
-          <span className="anatomy-state">共享状态 / 计划 · 证据 · 预算 · 错误</span>
+          <div className="anatomy-map__header">
+            <span>SYSTEM BLUEPRINT</span>
+            <b>显式 · 可检查 · 可恢复</b>
+          </div>
+          <svg className="anatomy-edges" viewBox="0 0 780 604" aria-hidden="true">
+            <defs>
+              <marker id="anatomy-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+              <marker id="anatomy-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+              <marker id="anatomy-arrow-danger" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+            </defs>
+            <g data-step="1" data-motion="fade">
+              <path className="anatomy-edge" d="M157 314 C180 314 180 234 207 234" />
+              <path className="anatomy-edge" d="M157 314 C180 314 180 404 207 404" />
+              <path className="anatomy-edge" d="M357 234 C382 234 382 314 410 314" />
+              <path className="anatomy-edge" d="M357 404 C382 404 382 314 410 314" />
+              <path className="anatomy-edge anatomy-edge--accent" d="M550 302 C570 280 578 234 598 234" />
+              <path className="anatomy-edge anatomy-edge--danger" d="M550 326 C572 348 578 404 598 404" />
+              <text className="anatomy-edge-label" x="166" y="294">并行</text>
+              <text className="anatomy-edge-label" x="365" y="294">汇合</text>
+              <text className="anatomy-edge-label anatomy-edge-label--accent" x="565" y="269">通过</text>
+              <text className="anatomy-edge-label anatomy-edge-label--danger" x="564" y="368">高风险</text>
+            </g>
+            <g data-step="2" data-motion="fade">
+              <path className="anatomy-state-link" d="M282 452 V510" />
+              <path className="anatomy-state-link" d="M480 362 V510" />
+              <path className="anatomy-state-link" d="M668 452 V510" />
+            </g>
+            <g data-step="3" data-motion="fade">
+              <path className="anatomy-controller-link" d="M390 166 V184 C390 194 374 194 357 206" />
+              <path className="anatomy-controller-link" d="M390 166 V184 C390 194 434 194 458 266" />
+              <text className="anatomy-controller-label" x="406" y="190">选择下一条边</text>
+            </g>
+          </svg>
+          <Reveal step={3} className="anatomy-controller">
+            <span>04 / CONTROLLER</span>
+            <strong>继续 · 重规划 · 转人工 · 安全终止</strong>
+          </Reveal>
+          <div className="anatomy-node anatomy-node--source">
+            <span>01 / NODE</span><b>规划</b>
+          </div>
+          <div className="anatomy-node anatomy-node--worker-a">
+            <span>01 / NODE</span><b>Agent A</b>
+          </div>
+          <div className="anatomy-node anatomy-node--worker-b">
+            <span>01 / NODE</span><b>Agent B</b>
+          </div>
+          <div className="anatomy-node anatomy-node--verify">
+            <span>01 / NODE</span><b>验证</b>
+          </div>
+          <div className="anatomy-node anatomy-node--result">
+            <span>01 / NODE</span><b>输出</b>
+          </div>
+          <div className="anatomy-node anatomy-node--human">
+            <span>01 / NODE</span><b>人工</b>
+          </div>
+          <Reveal step={2} className="anatomy-state" motion="fade">
+            <span>03 / STATE</span>
+            <strong>计划 · 证据 · 预算 · 错误 · 审批</strong>
+          </Reveal>
         </div>
         <div className="graph-anatomy-cards">
           <div className="anatomy-card">
             <span>01 / 节点</span>
             <strong>谁来执行？</strong>
-            <p>函数、模型、Agent、工具或人工</p>
+            <p>函数 · 模型 · Agent · 工具 · 人</p>
           </div>
           <Reveal step={1} className="anatomy-card">
             <span>02 / 边</span>
-            <strong>谁依赖谁？</strong>
-            <p>顺序、条件、并行、循环和等待</p>
+            <strong>怎样协作？</strong>
+            <p>顺序 · 条件 · 并行 · 循环 · 等待</p>
           </Reveal>
           <Reveal step={2} className="anatomy-card">
             <span>03 / 状态</span>
             <strong>传递什么事实？</strong>
-            <p>计划、证据、预算、错误和审批</p>
+            <p>计划 · 证据 · 预算 · 错误 · 审批</p>
           </Reveal>
           <Reveal step={3} className="anatomy-card anatomy-card--active">
             <span>04 / 控制器</span>
-            <strong>下一步做什么？</strong>
-            <p>继续、重规划、转人工或安全终止</p>
+            <strong>谁决定下一步？</strong>
+            <p>继续 · 重规划 · 转人工 · 安全终止</p>
           </Reveal>
         </div>
         <Reveal step={4} className="anatomy-conclusion" motion="grow-x">
-          <span>图承担系统可靠性的责任</span>
+          <span>节点负责完成任务</span>
+          <strong>图负责让整个系统值得信任</strong>
         </Reveal>
       </div>
     ),
@@ -506,47 +636,69 @@ const slides: SlideDefinition[] = [
   {
     id: "uncertain-nodes",
     section: "趋势 / 新的执行对象",
-    title: "真正的新问题：节点开始变得不确定",
+    title: "Agent 节点：进程成功，不等于任务完成",
     conclusion: "进程成功只代表模型给出了输出，不代表任务已经正确完成。",
     frameCount: 4,
     notes: [
-      "传统工作流节点执行 SQL、HTTP 或脚本，成功和失败通常比较明确。",
-      "Agent 节点可以正常返回一份语言流畅、但数字错误或没有来源的报告。",
-      "因此系统需要把模型的概率性判断装进确定性的控制边界。",
-      "Graph Engineering 的关键判断，是哪些自由交给模型，哪些约束必须由代码或人掌握。",
+      "确定性节点执行 SQL、HTTP 或脚本，Exit code、Schema 和测试通常可以直接判断结果。",
+      "Agent 节点即使返回 200 OK，也只说明它产生了输出，事实和证据仍然可能有问题。",
+      "因此系统必须区分运行成功和任务完成，语言流畅、结构完整都不是正确性的证据。",
+      "开放判断可以交给模型，权限、预算、Schema、证据门和审批必须由系统或人掌握。",
     ],
     visual: (
       <div className="uncertain-layout">
         <div className="execution-column execution-column--deterministic">
-          <span>确定性节点</span>
-          <strong>输入 → 脚本 → 结果</strong>
-          <div>
-            <b>SQL / HTTP / 测试</b>
-            <em>成功或失败相对明确</em>
+          <header>
+            <span>01 / DETERMINISTIC NODE</span>
+            <em>可直接判定</em>
+          </header>
+          <div className="execution-flow">
+            <b>输入</b><i>→</i><b>脚本</b><i>→</i><b>结果</b>
+          </div>
+          <div className="execution-signal">
+            <span>判定信号</span>
+            <strong>Exit code · Schema · 测试</strong>
+          </div>
+          <div className="execution-verdict">
+            <span>任务状态</span>
+            <strong>边界相对清楚</strong>
           </div>
         </div>
         <Reveal step={1} className="execution-column execution-column--agent">
-          <span>Agent 节点</span>
-          <strong>目标 → 探索 → 报告</strong>
-          <div>
-            <b>检索 / 工具 / 推理</b>
-            <em>输出成功，语义仍可能错误</em>
+          <header>
+            <span>02 / AGENT NODE</span>
+            <em>需要额外验证</em>
+          </header>
+          <div className="execution-flow">
+            <b>目标</b><i>→</i><b>探索</b><i>→</i><b>报告</b>
+          </div>
+          <div className="agent-status">
+            <div>
+              <span>运行状态</span>
+              <strong>200 OK</strong>
+              <em>已经产生输出</em>
+            </div>
+            <div className="agent-status__semantic">
+              <span>任务状态</span>
+              <strong>UNKNOWN</strong>
+              <em>事实和证据仍需验证</em>
+            </div>
           </div>
         </Reveal>
-        <Reveal step={2} className="control-boundary">
+        <Reveal step={2} className="semantic-gap" motion="fade">
+          <span>两种成功</span>
+          <div><b>运行成功</b><strong>≠</strong><b>任务完成</b></div>
+          <p>语言流畅、结构完整，仍然可能事实错误</p>
+        </Reveal>
+        <Reveal step={3} className="control-boundary">
           <div>
-            <span>交给模型</span>
+            <span>模型负责开放判断</span>
             <b>任务拆解 · 语义路由 · 探索策略</b>
           </div>
           <div>
-            <span>交给系统或人</span>
+            <span>系统和人负责硬约束</span>
             <b>权限 · 预算 · Schema · 证据门 · 审批</b>
           </div>
-        </Reveal>
-        <Reveal step={3} className="uncertain-warning" motion="fade">
-          <span>200 OK</span>
-          <strong>≠</strong>
-          <b>任务正确完成</b>
         </Reveal>
       </div>
     ),
@@ -554,58 +706,60 @@ const slides: SlideDefinition[] = [
   {
     id: "dynamic-workflows",
     section: "趋势 / Dynamic Workflows",
-    title: "Dynamic Workflows 是实现，Graph Engineering 是方法",
-    conclusion: "自动生成一张图，不等于自动获得可靠性。",
+    title: "生成编排，不等于获得可靠性",
+    conclusion: "Dynamic Workflows 回答怎样运行，Graph Engineering 回答怎样可信。",
     frameCount: 4,
     notes: [
-      "Anthropic 的 Dynamic Workflows 会根据任务生成 JavaScript 编排脚本。",
-      "脚本负责循环、分支、并行和中间结果，子 Agent 负责具体工作。",
-      "Graph Engineering 还要定义契约、权限、证据、恢复和人工审批。",
-      "所以 Dynamic Workflows 是一种实现方式，而不是 Graph Engineering 的全部。",
+      "Dynamic Workflows 是一种具体运行机制：它会根据任务生成 JavaScript 编排脚本。",
+      "脚本负责循环、分支、并行和中间结果，并调度多个子 Agent 完成具体工作。",
+      "Graph Engineering 位于工程方法层，还要设计契约、权限、证据、恢复和人工审批。",
+      "两者不是并列组件：自动生成并运行编排，不等于自动获得可靠性。",
     ],
     visual: (
       <div className="dynamic-layout">
+        <div className="dynamic-layer-heading">
+          <span>01 / 实现层</span>
+          <strong>Dynamic Workflows</strong>
+          <b>生成并运行编排代码</b>
+        </div>
         <div className="dynamic-flow">
-          <div className="dynamic-step">
-            <span>01</span>
+          <div className="dynamic-step dynamic-step--goal">
+            <span>01 / GOAL</span>
             <b>用户目标</b>
           </div>
           <Reveal step={1} className="dynamic-step dynamic-step--script">
-            <span>02</span>
-            <b>Claude 生成编排脚本</b>
-            <em>JavaScript</em>
+            <span>02 / GENERATE</span>
+            <b>Claude 生成脚本</b>
+            <em>JavaScript orchestration</em>
           </Reveal>
           <Reveal step={1} className="dynamic-workers">
-            <div>子 Agent A</div>
-            <div>子 Agent B</div>
-            <div>子 Agent C</div>
+            <span>03 / SCRIPT SCHEDULES</span>
+            <div>
+              <div><b>Agent A</b><em>检索</em></div>
+              <div><b>Agent B</b><em>修改</em></div>
+              <div><b>Agent C</b><em>验证</em></div>
+            </div>
           </Reveal>
           <Reveal step={2} className="dynamic-step dynamic-step--result">
-            <span>03</span>
-            <b>验证、汇合、返回结果</b>
+            <span>04 / RESULT</span>
+            <b>验证 · 汇合 · 返回</b>
           </Reveal>
         </div>
-        <Reveal step={2} className="engineering-guardrails">
-          {[
-            "输入输出契约",
-            "权限与预算",
-            "证据与验证",
-            "局部恢复",
-            "人工审批",
-          ].map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-        </Reveal>
-        <Reveal step={3} className="dynamic-equation" motion="fade">
-          <div>
-            <span>Dynamic Workflows</span>
-            <b>生成并运行编排代码</b>
-          </div>
-          <strong>+</strong>
-          <div>
-            <span>Graph Engineering</span>
+        <Reveal step={2} className="dynamic-governance">
+          <div className="dynamic-layer-heading dynamic-layer-heading--governance">
+            <span>02 / 方法层</span>
+            <strong>Graph Engineering</strong>
             <b>设计约束与治理规则</b>
           </div>
+          <div className="engineering-guardrails">
+            {["输入输出契约", "权限与预算", "证据与验证", "局部恢复", "人工审批"].map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+        </Reveal>
+        <Reveal step={3} className="dynamic-thesis" motion="fade">
+          <span>同一套系统 / 两个层次</span>
+          <div><b>自动生成编排</b><strong>≠</strong><b>自动获得可靠性</b></div>
         </Reveal>
       </div>
     ),
@@ -613,38 +767,124 @@ const slides: SlideDefinition[] = [
   {
     id: "graph-when",
     section: "趋势 / 工程判断",
-    title: "先用最小结构，直到复杂度真的出现",
-    conclusion: "Graph Engineering 不应该变成“边越多越专业”。",
+    title: "满足需求就停，不要默认升级到 Graph",
+    conclusion: "Graph 的每一条边，都应该对应真实约束。",
     frameCount: 4,
     notes: [
-      "路径固定、任务很短、整体重跑成本低时，普通 Workflow 收益最高。",
-      "路径开放、主要由一个 Agent 完成时，带验证和预算的 Loop 更自然。",
-      "只有出现多角色、真实依赖、局部恢复、审批和持久状态时，Graph 才开始值得。",
-      "每一条边都应该对应真实的数据依赖、共享限制或控制约束。",
+      "路径稳定、任务很短、整体重跑可接受时，先从 Workflow 开始。",
+      "只有路径无法预先写完、一个 Agent 需要根据反馈收敛时，才升级到 Loop。",
+      "只有复杂度溢出一个执行单元，出现多角色、真实依赖、局部恢复、审批或持久状态时，才升级到 Graph。",
+      "每次升级都需要任务约束作为证据；当前结构已经满足可靠性，就停在这里。",
     ],
     visual: (
       <div className="graph-when-layout">
-        <div className="structure-card">
+        <div className="structure-card structure-card--workflow">
           <span>01 / 固定流程</span>
           <strong>Workflow</strong>
-          <p>路径稳定、任务短、失败后整体重跑也能接受</p>
-          <em>结构成本 / 低</em>
+          <div className="structure-fit">
+            <b>适用条件</b>
+            <p>路径稳定 · 任务短 · 整体重跑可接受</p>
+          </div>
+          <em>满足需求，就停在这里</em>
+          <small><span>结构成本</span><b>低</b></small>
         </div>
+        <Reveal step={1} className="structure-escalation">
+          <span>升级证据</span>
+          <strong>路径无法<br />预先写完</strong>
+          <i aria-hidden="true">→</i>
+        </Reveal>
         <Reveal step={1} className="structure-card structure-card--loop">
           <span>02 / 开放探索</span>
           <strong>Loop</strong>
-          <p>一个 Agent 根据反馈持续行动，直到通过验证</p>
-          <em>适应能力 / 高</em>
+          <div className="structure-fit">
+            <b>适用条件</b>
+            <p>单 Agent · 开放路径 · 依靠反馈收敛</p>
+          </div>
+          <em>满足需求，就停在这里</em>
+          <small><span>结构成本</span><b>中</b></small>
+        </Reveal>
+        <Reveal step={2} className="structure-escalation">
+          <span>升级证据</span>
+          <strong>复杂度溢出<br />一个执行单元</strong>
+          <i aria-hidden="true">→</i>
         </Reveal>
         <Reveal step={2} className="structure-card structure-card--graph">
           <span>03 / 复杂协作</span>
           <strong>Graph</strong>
-          <p>多角色、并行依赖、局部恢复、审批与持久状态</p>
-          <em>控制能力 / 高</em>
+          <div className="structure-fit">
+            <b>适用条件</b>
+            <p>多角色 · 真实依赖 · 局部恢复 / 审批 / 持久状态</p>
+          </div>
+          <em>满足需求，就停在这里</em>
+          <small><span>结构成本</span><b>高</b></small>
         </Reveal>
         <Reveal step={3} className="structure-rule" motion="grow-x">
           <span>真正的工程判断</span>
-          <strong>用最低的结构成本，换取任务真正需要的可靠性</strong>
+          <div>
+            <b>每次升级，都要有任务约束作为证据</b>
+            <strong>用最低的结构成本，换取任务真正需要的可靠性</strong>
+          </div>
+        </Reveal>
+      </div>
+    ),
+  },
+  {
+    id: "agent-plugins",
+    section: "趋势 / 能力交付",
+    title: "Agent Plugins：统一的是包装",
+    conclusion: "Graph 解决运行时协作，Plugin 解决交付时兼容。",
+    frameCount: 5,
+    notes: [
+      "一套工作方式成熟以后，下一个问题是怎样交给其他 Agent、项目和团队复用。",
+      "过去安装 Skill 时，往往要先选择目标 Agent，再适配它的目录、清单和 MCP 配置。",
+      "来自多家公司的核心维护者共同推进 Agent Plugins，把 Skill 和 MCP 放进同一种标准包。",
+      "它统一的是包格式；安装入口、权限、体验和客户端专属扩展仍由各客户端决定。",
+      "一个 Skill 或单客户端 MCP 不必做成 Plugin；相关能力需要一起流转时，它才真正有价值。",
+    ],
+    visual: (
+      <div className="plugin-layout">
+        <div className="plugin-question">
+          <span>一套成熟的工作方式</span>
+          <strong>怎样交给别的 Agent？</strong>
+        </div>
+        <div className="plugin-before">
+          <span>过去 / 先选择目标</span>
+          <strong>装给哪个 Agent？</strong>
+          <div>
+            <b>Agent A</b>
+            <em>目录 A · 清单 A · MCP 配置 A</em>
+          </div>
+          <div>
+            <b>Agent B</b>
+            <em>目录 B · 清单 B · MCP 配置 B</em>
+          </div>
+        </div>
+        <Reveal step={1} className="plugin-package">
+          <span>现在 / 一个标准包</span>
+          <strong>Agent Plugin</strong>
+          <div className="plugin-tree">
+            <b>plugin.json</b>
+            <b>skills/</b>
+            <b>mcp.json</b>
+            <em>client-specific/</em>
+          </div>
+          <small>可移植核心</small>
+        </Reveal>
+        <Reveal step={2} className="plugin-clients">
+          <span>兼容客户端</span>
+          <div><b>Agent A</b><em>发现并加载</em></div>
+          <div><b>Agent B</b><em>发现并加载</em></div>
+          <div><b>Agent C</b><em>发现并加载</em></div>
+        </Reveal>
+        <Reveal step={3} className="plugin-boundary" motion="grow-x">
+          <span>统一包格式</span>
+          <strong>≠</strong>
+          <span>统一安装、权限与 UX</span>
+        </Reveal>
+        <Reveal step={4} className="plugin-bridge" motion="fade">
+          <div><span>Graph</span><b>运行时 / 怎样协作</b></div>
+          <strong>→</strong>
+          <div><span>Plugin</span><b>交付时 / 怎样兼容</b></div>
         </Reveal>
       </div>
     ),
@@ -1488,7 +1728,7 @@ const slides: SlideDefinition[] = [
     conclusion: "我们不需要在打字速度上赢过 AI。",
     frameCount: 4,
     notes: [
-      "第一部分的 Graph Engineering 和第二部分的个人经历汇合在同一点。",
+      "第一部分的 Graph、Plugin 和第二部分的个人经历，最后汇合在同一点。",
       "模型负责越来越多的不确定执行，系统和人负责目标、约束、证据与判断。",
       "我们不需要在打字速度上赢过 AI。",
       "把大量执行交给 AI，同时更认真地承担需求、边界、验证和 Taste。",
