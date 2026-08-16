@@ -1984,6 +1984,7 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
   const [frames, setFrames] = useState(() => slides.map(() => 0));
   const [elapsed, setElapsed] = useState(0);
   const [openingExiting, setOpeningExiting] = useState(false);
+  const [mediaUnlocked, setMediaUnlocked] = useState(mode === "presenter");
   const channelRef = useRef<BroadcastChannel | null>(null);
   const sourceIdRef = useRef("");
 
@@ -2331,9 +2332,38 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
       {deck}
       {openingActive ? (
         <OpeningSequence
+          mediaUnlocked={mediaUnlocked}
           onComplete={completeOpening}
           onExitStart={prepareOpeningExit}
         />
+      ) : null}
+      {!mediaUnlocked ? (
+        <button
+          type="button"
+          autoFocus
+          onClick={() => setMediaUnlocked(true)}
+          aria-label="开始演示并启用声音"
+          style={{
+            position: "absolute",
+            zIndex: 400,
+            inset: 0,
+            display: "grid",
+            width: "100%",
+            height: "100%",
+            border: 0,
+            color: "#f5f7f7",
+            background: "#090d0f",
+            cursor: "pointer",
+            fontFamily: '"IBM Plex Mono", Consolas, monospace',
+            fontSize: 14,
+            fontWeight: 650,
+            letterSpacing: "0.14em",
+            placeContent: "center",
+            textTransform: "uppercase",
+          }}
+        >
+          开始演示 · 启用声音
+        </button>
       ) : null}
     </div>
   );

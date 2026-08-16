@@ -89,18 +89,20 @@ test("server-renders the presenter route", async () => {
 
 test("uses the first 60 seconds of Neon Horizon for the opening BGM", async () => {
   const source = await readFile(
-    new URL("../app/opening/OpeningSequence.tsx", import.meta.url),
+    new URL(
+      "../app/opening/remotion/OpeningSequenceComposition.tsx",
+      import.meta.url,
+    ),
     "utf8",
   );
 
-  assert.match(source, /assets\/audio\/Neon Horizon\.mp3\?url/);
-  assert.doesNotMatch(source, /assets\/audio\/opening-bgm\.wav\?url/);
-  assert.match(source, /const BGM_VOLUME = 0\.2;/);
-  assert.match(source, /const BGM_DUCK_VOLUME = 0\.07;/);
-  assert.match(source, /const BGM_CLIP_SECONDS = 60;/);
-  assert.match(source, /const BGM_FADE_SECONDS = 8;/);
-  assert.match(source, /BGM_CLIP_SECONDS - BGM_FADE_SECONDS/);
-  assert.match(source, /if \(bgmFadingOut\) return;/);
+  assert.match(source, /assets\/audio\/Neon Horizon\.mp3/);
+  assert.doesNotMatch(source, /assets\/audio\/opening-bgm\.wav/);
+  assert.match(source, /OPENING_SEQUENCE_DURATION = 60 \* OPENING_SEQUENCE_FPS/);
+  assert.match(source, /frame < frameAt\(52\)/);
+  assert.match(source, /mix\(0\.2, 0, between\(frame, frameAt\(52\), frameAt\(60\)\)\)/);
+  assert.match(source, /\? 0\.07\s+: 0\.2/);
+  assert.match(source, /Math\.min\(fadedVolume, duckedVolume\)/);
 });
 
 test("keeps presentation typography legible at a distance", async () => {
