@@ -54,11 +54,17 @@ test("server-renders the Vibe Coding presentation", async () => {
   assert.match(html, /复杂度溢出/);
   assert.match(html, /每次升级，都要有任务约束作为证据/);
   assert.match(html, /Agent Plugins：统一的是包装/);
-  assert.match(html, /统一包格式/);
-  assert.match(html, /统一安装、权限与 UX/);
+  assert.match(html, /N 份客户端适配/);
+  assert.match(html, /1 个标准包/);
+  assert.match(html, /规范统一的部分/);
+  assert.match(html, /仍由客户端决定/);
+  assert.match(html, /不是前后两代，而是两个工程方向/);
   assert.match(html, /第二部分 \/ 我的实践/);
   assert.match(html, /最初：慢，但是还在控制下/);
   assert.match(html, /说完需求，然后“开始实现吧”/);
+  assert.match(html, /执行权交给 Agent/);
+  assert.match(html, /中间状态不可见/);
+  assert.match(html, /执行者 → 状态检查员/);
   assert.match(html, /一个周末：两个 Goal，执行了 20 个小时/);
   assert.match(html, /开发者正在变成技术产品经理/);
   assert.match(html, /测试驱动比 Spec 驱动更重要/);
@@ -71,6 +77,7 @@ test("server-renders the Vibe Coding presentation", async () => {
   assert.match(html, /00(?:(?:<!-- -->)|\s)*\/(?:(?:<!-- -->)|\s)*26/);
   assert.match(html, /aria-label="上一页"/);
   assert.match(html, /aria-label="下一页"/);
+  assert.match(html, /class="presentation-stage"/);
   assert.doesNotMatch(html, /Click or press any key to begin/);
   assert.doesNotMatch(html, /aria-label="Presentation opening"/);
   assert.match(html, /把执行交给 AI，把工程判断留在人手里/);

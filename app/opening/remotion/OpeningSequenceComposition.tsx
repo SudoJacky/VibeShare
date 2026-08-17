@@ -28,22 +28,22 @@ import {
   interpolateColors,
   useCurrentFrame,
 } from "remotion";
-import autoAmber from "../assets/auto-theme-amber.png";
-import autoAqua from "../assets/auto-theme-aqua.png";
-import autoCobalt from "../assets/auto-theme-cobalt.png";
-import autoLime from "../assets/auto-theme-lime.png";
-import autoMonochrome from "../assets/auto-theme-monochrome.png";
-import autoRose from "../assets/auto-theme-rose.png";
-import autoViolet from "../assets/auto-theme-violet.png";
-import buildBusiness from "../assets/build-business.png";
-import buildSystem from "../assets/build-system.png";
-import buildTeam from "../assets/build-team.png";
-import buildWorld from "../assets/build-world.png";
-import learnReferenceData from "../assets/learn-reference-data.png";
-import learnReferenceMars from "../assets/learn-reference-mars.png";
-import learnReferenceOrbitSketch from "../assets/learn-reference-orbit-sketch.png";
-import learnStarfield from "../assets/learn-starfield.png";
-import rocketLaunch from "../assets/rocket-launch.png";
+import autoAmber from "../assets/auto-theme-amber.webp";
+import autoAqua from "../assets/auto-theme-aqua.webp";
+import autoCobalt from "../assets/auto-theme-cobalt.webp";
+import autoLime from "../assets/auto-theme-lime.webp";
+import autoMonochrome from "../assets/auto-theme-monochrome.webp";
+import autoRose from "../assets/auto-theme-rose.webp";
+import autoViolet from "../assets/auto-theme-violet.webp";
+import buildBusiness from "../assets/build-business.webp";
+import buildSystem from "../assets/build-system.webp";
+import buildTeam from "../assets/build-team.webp";
+import buildWorld from "../assets/build-world.webp";
+import learnReferenceData from "../assets/learn-reference-data.webp";
+import learnReferenceMars from "../assets/learn-reference-mars.webp";
+import learnReferenceOrbitSketch from "../assets/learn-reference-orbit-sketch.webp";
+import learnStarfield from "../assets/learn-starfield.webp";
+import rocketLaunch from "../assets/rocket-launch.webp";
 import styles from "../opening-sequence.module.css";
 import { OpeningSequencePrototype } from "./OpeningSequencePrototype";
 

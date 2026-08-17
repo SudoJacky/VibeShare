@@ -26,6 +26,8 @@ gsap.registerPlugin(useGSAP);
 
 type PresentationMode = "audience" | "presenter";
 type MotionKind = "rise" | "grow-x" | "grow-y" | "fade" | "wipe";
+const PRESENTATION_WIDTH = 1920;
+const PRESENTATION_HEIGHT = 1080;
 const OPENING_DEMO_SLIDE_ID = "opening-demo";
 
 type SlideDefinition = {
@@ -835,56 +837,76 @@ const slides: SlideDefinition[] = [
     conclusion: "Graph 解决运行时协作，Plugin 解决交付时兼容。",
     frameCount: 5,
     notes: [
-      "一套工作方式成熟以后，下一个问题是怎样交给其他 Agent、项目和团队复用。",
-      "过去安装 Skill 时，往往要先选择目标 Agent，再适配它的目录、清单和 MCP 配置。",
-      "来自多家公司的核心维护者共同推进 Agent Plugins，把 Skill 和 MCP 放进同一种标准包。",
-      "它统一的是包格式；安装入口、权限、体验和客户端专属扩展仍由各客户端决定。",
-      "一个 Skill 或单客户端 MCP 不必做成 Plugin；相关能力需要一起流转时，它才真正有价值。",
+      "现在安装 Skill 时，往往先选择目标 Agent；同一套能力会被目录、清单和 MCP 配置复制成多份。",
+      "Agent Plugin 把 plugin.json、skills 和 MCP 配置放进一个标准包；它统一的是包装，而不是发明新的能力。",
+      "兼容规范的 Agent 可以发现并加载同一个包，因此可以先打包能力，再决定交付到哪里。",
+      "边界仍在客户端：安装入口、权限、安全策略、UX 和客户端专属扩展并不会自动统一。",
+      "只有相关能力需要一起跨客户端交付时才值得做 Plugin；Graph 管运行时协作，Plugin 管交付时兼容。",
     ],
     visual: (
       <div className="plugin-layout">
-        <div className="plugin-question">
-          <span>一套成熟的工作方式</span>
-          <strong>怎样交给别的 Agent？</strong>
+        <div className="plugin-thesis">
+          <span>一套工作方式成熟以后</span>
+          <strong>从 <b>N 份客户端适配</b>，到 <b>1 个标准包</b></strong>
         </div>
         <div className="plugin-before">
-          <span>过去 / 先选择目标</span>
-          <strong>装给哪个 Agent？</strong>
-          <div>
-            <b>Agent A</b>
-            <em>目录 A · 清单 A · MCP 配置 A</em>
+          <span>过去 / TARGET FIRST</span>
+          <strong>先选 Agent，再分别适配</strong>
+          <div className="plugin-source">
+            <b>Skill + MCP</b>
+            <em>同一套工作方式</em>
           </div>
-          <div>
-            <b>Agent B</b>
-            <em>目录 B · 清单 B · MCP 配置 B</em>
+          <div className="plugin-targets">
+            <div><b>Agent A</b><em>目录 A · 清单 A · MCP A</em></div>
+            <div><b>Agent B</b><em>目录 B · 清单 B · MCP B</em></div>
           </div>
         </div>
+        <Reveal step={1} className="plugin-transfer">
+          <span>PACKAGE ONCE</span>
+          <i aria-hidden="true">→</i>
+        </Reveal>
         <Reveal step={1} className="plugin-package">
-          <span>现在 / 一个标准包</span>
+          <span>现在 / STANDARD PACKAGE</span>
           <strong>Agent Plugin</strong>
           <div className="plugin-tree">
+            <span>可移植核心</span>
             <b>plugin.json</b>
             <b>skills/</b>
             <b>mcp.json</b>
-            <em>client-specific/</em>
           </div>
-          <small>可移植核心</small>
+          <div className="plugin-extension">
+            <span>客户端扩展</span>
+            <em>Hooks · Commands</em>
+          </div>
+        </Reveal>
+        <Reveal step={2} className="plugin-transfer plugin-transfer--load">
+          <span>COMPATIBLE</span>
+          <i aria-hidden="true">→</i>
         </Reveal>
         <Reveal step={2} className="plugin-clients">
-          <span>兼容客户端</span>
-          <div><b>Agent A</b><em>发现并加载</em></div>
-          <div><b>Agent B</b><em>发现并加载</em></div>
-          <div><b>Agent C</b><em>发现并加载</em></div>
+          <span>交付 / COMPATIBLE AGENTS</span>
+          <strong>同一个包，多端加载</strong>
+          <div><b>Agent A</b><em>发现 · 加载</em></div>
+          <div><b>Agent B</b><em>发现 · 加载</em></div>
+          <div><b>Agent C</b><em>发现 · 加载</em></div>
         </Reveal>
         <Reveal step={3} className="plugin-boundary" motion="grow-x">
-          <span>统一包格式</span>
+          <div>
+            <span>规范统一的部分</span>
+            <b>包格式 · 可移植核心</b>
+          </div>
           <strong>≠</strong>
-          <span>统一安装、权限与 UX</span>
+          <div>
+            <span>仍由客户端决定</span>
+            <b>安装 · 权限 · UX · 专属扩展</b>
+          </div>
         </Reveal>
         <Reveal step={4} className="plugin-bridge" motion="fade">
-          <div><span>Graph</span><b>运行时 / 怎样协作</b></div>
-          <strong>→</strong>
-          <div><span>Plugin</span><b>交付时 / 怎样兼容</b></div>
+          <span>不是前后两代，而是两个工程方向</span>
+          <div>
+            <b><em>Graph</em>运行时 / 这次任务怎样协作</b>
+            <b><em>Plugin</em>交付时 / 这套能力怎样兼容</b>
+          </div>
         </Reveal>
       </div>
     ),
@@ -995,47 +1017,85 @@ const slides: SlideDefinition[] = [
     id: "manual-loop",
     section: "实践 / 第一阶段",
     title: "说完需求，然后“开始实现吧”",
-    conclusion: "小功能非常顺滑，但我开始频繁回来查看 Agent 的状态。",
+    conclusion: "执行权交给了 Agent，注意力却被状态检查绑住了。",
     frameCount: 5,
     notes: [
       "想到一个功能，就把需求告诉 Agent，让它开始实现。",
-      "搜索、定位、修改和测试可以连续完成。",
-      "范围小的时候，这种方式非常顺滑。",
-      "但一个功能到底要多久，我并不知道。",
-      "原来是自己执行，现在变成不断回来查看执行状态。",
+      "Agent 可以连续完成搜索、定位和修改，执行权第一次真正交了出去。",
+      "范围小的时候，从运行、修复到完成都非常顺滑；但连续执行也把中间状态藏了起来。",
+      "我不知道还要多久、有没有卡住、是不是在等确认，于是每隔十几分钟就回来一次。",
+      "原来是自己执行，现在变成不断检查状态；我开始追求一个能持续跑到完成的 Agent Loop。",
     ],
     visual: (
       <div className="manual-layout">
-        <div className="loop-board">
-          <Node index="01" title="描述需求" detail="想到一个新功能" />
-          <Reveal step={1}>
-            <Node index="02" title="搜索" detail="定位代码与文档" />
-          </Reveal>
-          <Reveal step={1}>
-            <Node index="03" title="修改" detail="连续完成实现" />
-          </Reveal>
-          <Reveal step={2}>
-            <Node index="04" title="运行" detail="测试并继续修复" />
-          </Reveal>
-          <Reveal step={2}>
-            <Node index="05" title="完成" detail="交付一个功能" tone="active" />
-          </Reveal>
-          <Reveal step={3}>
-            <Node index="06" title="回来看看" detail="做完了吗？卡住了吗？" tone="danger" />
-          </Reveal>
-          <Reveal
-            step={3}
-            className="loop-return"
-            motion="grow-x"
-          >
-              <span>一句话启动 / “开始实现吧”</span>
-          </Reveal>
+        <div className="manual-trigger">
+          <span>01 / HUMAN</span>
+          <strong>想到一个功能</strong>
+          <p>描述需求和期望结果</p>
+          <blockquote>“开始实现吧”</blockquote>
         </div>
-          <Reveal step={4} className="metric-rail">
-          <Metric label="小范围体验" value="顺滑" tone="active" />
-          <Metric label="执行速度" value="快" />
-          <Metric label="人工盯梢" value="频繁" tone="danger" />
+        <Reveal step={1} className="manual-handoff" motion="grow-x">
+          <span>执行权交给 Agent</span>
+          <i aria-hidden="true">→</i>
+        </Reveal>
+        <Reveal step={1} className="manual-agent">
+          <header>
+            <span>AGENT / CONTINUOUS EXECUTION</span>
+            <strong>连续执行</strong>
+          </header>
+          <div className="manual-agent-flow">
+            <div className="manual-agent-segment">
+              <div className="manual-agent-step">
+                <span>02</span>
+                <b>搜索</b>
+                <em>代码与文档</em>
+              </div>
+              <i aria-hidden="true">→</i>
+              <div className="manual-agent-step">
+                <span>03</span>
+                <b>修改</b>
+                <em>连续实现</em>
+              </div>
+            </div>
+            <Reveal step={2} className="manual-agent-segment manual-agent-segment--finish">
+              <i aria-hidden="true">→</i>
+              <div className="manual-agent-step">
+                <span>04</span>
+                <b>运行</b>
+                <em>测试与修复</em>
+              </div>
+              <i aria-hidden="true">→</i>
+              <div className="manual-agent-step manual-agent-step--complete">
+                <span>05</span>
+                <b>完成</b>
+                <em>交付功能</em>
+              </div>
+            </Reveal>
+          </div>
+          <Reveal step={3} className="manual-unknown" motion="fade">
+            <span>中间状态不可见</span>
+            <b>还要多久 · 是否卡住 · 是否在等确认</b>
           </Reveal>
+        </Reveal>
+        <Reveal step={3} className="manual-checkin">
+          <span>06 / HUMAN RETURNS</span>
+          <strong>回来看看</strong>
+          <p>每隔十几分钟</p>
+          <div><b>做完了吗？</b><em>UNKNOWN</em></div>
+          <div><b>卡住了吗？</b><em>UNKNOWN</em></div>
+          <div><b>在等我吗？</b><em>UNKNOWN</em></div>
+        </Reveal>
+        <Reveal step={4} className="manual-insight" motion="grow-x">
+          <span>真正的变化</span>
+          <div className="manual-gain">
+            <em>获得</em>
+            <b>小功能：顺滑、快</b>
+          </div>
+          <div className="manual-cost">
+            <em>代价</em>
+            <b>执行者 → 状态检查员</b>
+          </div>
+        </Reveal>
       </div>
     ),
   },
@@ -1987,12 +2047,32 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
   const [mediaUnlocked, setMediaUnlocked] = useState(mode === "presenter");
   const channelRef = useRef<BroadcastChannel | null>(null);
   const sourceIdRef = useRef("");
+  const audienceStageRef = useRef<HTMLDivElement>(null);
 
   const currentSlide = slides[pageIndex];
   const currentFrame = frames[pageIndex];
   const isOpeningDemoSlide = currentSlide.id === OPENING_DEMO_SLIDE_ID;
   const openingActive =
     mode === "audience" && (isOpeningDemoSlide || openingExiting);
+
+  useEffect(() => {
+    if (mode !== "audience") return;
+
+    const stage = audienceStageRef.current;
+    if (!stage) return;
+
+    const fitStageToViewport = () => {
+      const scale = Math.min(
+        window.innerWidth / PRESENTATION_WIDTH,
+        window.innerHeight / PRESENTATION_HEIGHT,
+      );
+      stage.style.setProperty("--presentation-scale", String(scale));
+    };
+
+    fitStageToViewport();
+    window.addEventListener("resize", fitStageToViewport);
+    return () => window.removeEventListener("resize", fitStageToViewport);
+  }, [mode]);
 
   const broadcastState = (
     nextPage: number,
@@ -2329,42 +2409,44 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
 
   return (
     <div className="presentation-root">
-      {deck}
-      {openingActive ? (
-        <OpeningSequence
-          mediaUnlocked={mediaUnlocked}
-          onComplete={completeOpening}
-          onExitStart={prepareOpeningExit}
-        />
-      ) : null}
-      {!mediaUnlocked ? (
-        <button
-          type="button"
-          autoFocus
-          onClick={() => setMediaUnlocked(true)}
-          aria-label="开始演示并启用声音"
-          style={{
-            position: "absolute",
-            zIndex: 400,
-            inset: 0,
-            display: "grid",
-            width: "100%",
-            height: "100%",
-            border: 0,
-            color: "#f5f7f7",
-            background: "#090d0f",
-            cursor: "pointer",
-            fontFamily: '"IBM Plex Mono", Consolas, monospace',
-            fontSize: 14,
-            fontWeight: 650,
-            letterSpacing: "0.14em",
-            placeContent: "center",
-            textTransform: "uppercase",
-          }}
-        >
-          开始演示 · 启用声音
-        </button>
-      ) : null}
+      <div ref={audienceStageRef} className="presentation-stage">
+        {deck}
+        {openingActive ? (
+          <OpeningSequence
+            mediaUnlocked={mediaUnlocked}
+            onComplete={completeOpening}
+            onExitStart={prepareOpeningExit}
+          />
+        ) : null}
+        {!mediaUnlocked ? (
+          <button
+            type="button"
+            autoFocus
+            onClick={() => setMediaUnlocked(true)}
+            aria-label="开始演示并启用声音"
+            style={{
+              position: "absolute",
+              zIndex: 400,
+              inset: 0,
+              display: "grid",
+              width: "100%",
+              height: "100%",
+              border: 0,
+              color: "#f5f7f7",
+              background: "#090d0f",
+              cursor: "pointer",
+              fontFamily: '"IBM Plex Mono", Consolas, monospace',
+              fontSize: 14,
+              fontWeight: 650,
+              letterSpacing: "0.14em",
+              placeContent: "center",
+              textTransform: "uppercase",
+            }}
+          >
+            开始演示 · 启用声音
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

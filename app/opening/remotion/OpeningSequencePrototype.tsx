@@ -9,26 +9,26 @@ import {
   interpolate,
   useCurrentFrame,
 } from "remotion";
-import page1 from "../assets/ai-pages-1.png";
-import page2 from "../assets/ai-pages-2.png";
-import page3 from "../assets/ai-pages-3.png";
-import page4 from "../assets/ai-pages-4.png";
-import page5 from "../assets/ai-pages-5.png";
-import page6 from "../assets/ai-pages-6.png";
-import page7 from "../assets/ai-pages-7.png";
-import page8 from "../assets/ai-pages-8.png";
-import page9 from "../assets/ai-pages-9.png";
-import page10 from "../assets/ai-pages-10.png";
-import page11 from "../assets/ai-pages-11.png";
-import page12 from "../assets/ai-pages-12.png";
-import page13 from "../assets/ai-pages-13.png";
-import page14 from "../assets/ai-pages-14.png";
-import page15 from "../assets/ai-pages-15.png";
-import page16 from "../assets/ai-pages-16.png";
-import page17 from "../assets/ai-pages-17.png";
-import page18 from "../assets/ai-pages-18.png";
-import page19 from "../assets/ai-pages-19.png";
-import page20 from "../assets/ai-pages-20.png";
+import page1 from "../assets/ai-pages-1.webp";
+import page2 from "../assets/ai-pages-2.webp";
+import page3 from "../assets/ai-pages-3.webp";
+import page4 from "../assets/ai-pages-4.webp";
+import page5 from "../assets/ai-pages-5.webp";
+import page6 from "../assets/ai-pages-6.webp";
+import page7 from "../assets/ai-pages-7.webp";
+import page8 from "../assets/ai-pages-8.webp";
+import page9 from "../assets/ai-pages-9.webp";
+import page10 from "../assets/ai-pages-10.webp";
+import page11 from "../assets/ai-pages-11.webp";
+import page12 from "../assets/ai-pages-12.webp";
+import page13 from "../assets/ai-pages-13.webp";
+import page14 from "../assets/ai-pages-14.webp";
+import page15 from "../assets/ai-pages-15.webp";
+import page16 from "../assets/ai-pages-16.webp";
+import page17 from "../assets/ai-pages-17.webp";
+import page18 from "../assets/ai-pages-18.webp";
+import page19 from "../assets/ai-pages-19.webp";
+import page20 from "../assets/ai-pages-20.webp";
 export const OPENING_PROTOTYPE_FPS = 60;
 export const OPENING_PROTOTYPE_DURATION = OPENING_PROTOTYPE_FPS * 10;
 
