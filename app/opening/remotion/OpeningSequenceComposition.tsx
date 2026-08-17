@@ -267,6 +267,8 @@ const questionTextLength = questionLines.reduce(
   (total, line) => total + line.length,
   0,
 );
+const AUTOMATION_QUESTION_TYPING_START = 105;
+const AUTOMATION_QUESTION_TYPING_END = 235;
 
 function AutomationScene() {
   const frame = useCurrentFrame();
@@ -283,7 +285,15 @@ function AutomationScene() {
     between(frame, 0, 110, Easing.inOut(Easing.cubic)),
   );
   const typedCharacters = Math.round(
-    mix(0, questionTextLength, between(frame, 105, 235)),
+    mix(
+      0,
+      questionTextLength,
+      between(
+        frame,
+        AUTOMATION_QUESTION_TYPING_START,
+        AUTOMATION_QUESTION_TYPING_END,
+      ),
+    ),
   );
   const visibleLines = questionLines.map((line, index) => {
     const charactersBefore = questionLines
@@ -944,6 +954,11 @@ const ghostCards = [
   [styles.planGhostFive, "Risk · Data migration"],
   [styles.planGhostSix, "Dependency · Design system"],
 ] as const;
+const PLAN_ANYTHING_REVEAL_END = 132;
+const PLAN_STATEMENT_HOLD_FRAMES = frameAt(1);
+const PLAN_STATEMENT_FADE_START =
+  PLAN_ANYTHING_REVEAL_END + PLAN_STATEMENT_HOLD_FRAMES;
+const PLAN_STATEMENT_FADE_END = PLAN_STATEMENT_FADE_START + 22;
 
 function PlanScene() {
   const frame = useCurrentFrame();
@@ -951,7 +966,12 @@ function PlanScene() {
   const blueprintOut = between(frame, 30, 48, Easing.inOut(Easing.cubic));
   const leadIn = between(frame, 50, 72, Easing.out(Easing.cubic));
   const leadShift = between(frame, 105, 128, Easing.inOut(Easing.cubic));
-  const anythingIn = between(frame, 108, 132, Easing.out(Easing.cubic));
+  const anythingIn = between(
+    frame,
+    108,
+    PLAN_ANYTHING_REVEAL_END,
+    Easing.out(Easing.cubic),
+  );
   const canvasIn = between(frame, 122, 160, Easing.out(Easing.cubic));
   const timelineIn = between(frame, 188, 215, Easing.out(Easing.cubic));
   const ghostIn = between(frame, 250, 292, Easing.out(Easing.cubic));
@@ -970,8 +990,8 @@ function PlanScene() {
             return <span key={idea} style={{ opacity: itemIn * (1 - itemOut), transform: `translateY(${mix(28, -10, itemIn)}px) scale(${mix(0.92, 1, itemIn)})` }}>{idea}</span>;
           })}
         </div>
-        <span className={styles.planLead} style={{ opacity: leadIn * (1 - between(frame, 144, 166)), transform: `translateX(${mix(0, -360, leadShift)}px) scale(${mix(0.96, 1, leadIn)})` }}>Plan</span>
-        <span className={styles.planAnything} style={{ opacity: anythingIn * (1 - between(frame, 144, 166)), clipPath: `inset(0 ${(1 - anythingIn) * 100}% 0 0)`, transform: `translateX(${mix(44, 0, anythingIn)}px)` }}>anything.</span>
+        <span className={styles.planLead} style={{ opacity: leadIn * (1 - between(frame, PLAN_STATEMENT_FADE_START, PLAN_STATEMENT_FADE_END)), transform: `translateX(${mix(0, -360, leadShift)}px) scale(${mix(0.96, 1, leadIn)})` }}>Plan</span>
+        <span className={styles.planAnything} style={{ opacity: anythingIn * (1 - between(frame, PLAN_STATEMENT_FADE_START, PLAN_STATEMENT_FADE_END)), clipPath: `inset(0 ${(1 - anythingIn) * 100}% 0 0)`, transform: `translateX(${mix(44, 0, anythingIn)}px)` }}>anything.</span>
 
         <div className={styles.planCanvas} style={{ opacity: canvasIn }}>
           <svg className={styles.planConnections} viewBox="0 0 1920 1080" aria-hidden="true">
@@ -1106,7 +1126,7 @@ function OpeningAudio() {
       <Sequence from={frameAt(11)} durationInFrames={frameAt(1)}><Audio src={audioSources.assigning} pauseWhenBuffering /></Sequence>
       <Sequence from={frameAt(12)} durationInFrames={frameAt(1)}><Audio src={audioSources.prioritizing} pauseWhenBuffering /></Sequence>
       <Sequence from={frameAt(13)} durationInFrames={frameAt(1)}><Audio src={audioSources.updating} pauseWhenBuffering /></Sequence>
-      <Sequence from={frameAt(14)} durationInFrames={frameAt(4)}><Audio src={audioSources.whatIfAll} pauseWhenBuffering /></Sequence>
+      <Sequence from={frameAt(14) + AUTOMATION_QUESTION_TYPING_START} durationInFrames={frameAt(4)}><Audio src={audioSources.whatIfAll} pauseWhenBuffering /></Sequence>
       <Sequence from={frameAt(52)} durationInFrames={frameAt(1.5)}><Audio src={audioSources.idea} pauseWhenBuffering /></Sequence>
       <Sequence from={frameAt(53.5)} durationInFrames={frameAt(3)}><Audio src={audioSources.execution} pauseWhenBuffering /></Sequence>
     </>

@@ -12,8 +12,12 @@ const keyboardEvent = (overrides = {}) => ({
   ...overrides,
 });
 
-test("Shift + End is the hidden opening skip shortcut", () => {
+test("Shift + End and Shift + ArrowRight skip the opening", () => {
   assert.equal(isOpeningSkipShortcut(keyboardEvent()), true);
+  assert.equal(
+    isOpeningSkipShortcut(keyboardEvent({ key: "ArrowRight" })),
+    true,
+  );
   assert.equal(
     isOpeningSkipShortcut(keyboardEvent({ shiftKey: false })),
     false,
@@ -23,7 +27,9 @@ test("Shift + End is the hidden opening skip shortcut", () => {
     false,
   );
   assert.equal(
-    isOpeningSkipShortcut(keyboardEvent({ key: "ArrowRight" })),
+    isOpeningSkipShortcut(
+      keyboardEvent({ key: "ArrowRight", shiftKey: false }),
+    ),
     false,
   );
 });

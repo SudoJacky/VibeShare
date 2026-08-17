@@ -25,13 +25,13 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       url: origin,
       title: "AI 写得越来越快，我怎样没有失去对代码库的控制",
-      description: "一场关于速度、控制与工程判断的 Vibe Coding 分享。",
+      description: "从接近 230 亿 Token 的使用经历，回看 Vibe Coding 里的失控、重构和工程判断。",
       images: [{ url: imageUrl, width: 1672, height: 941 }],
     },
     twitter: {
       card: "summary_large_image",
       title: "AI 写得越来越快，我怎样没有失去对代码库的控制",
-      description: "一场关于速度、控制与工程判断的 Vibe Coding 分享。",
+      description: "从接近 230 亿 Token 的使用经历，回看 Vibe Coding 里的失控、重构和工程判断。",
       images: [imageUrl],
     },
   };
