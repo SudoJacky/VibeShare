@@ -5,7 +5,7 @@ type OpeningShortcutEvent = Pick<
 
 export function isOpeningSkipShortcut(event: OpeningShortcutEvent) {
   return (
-    event.key === "End" &&
+    (event.key === "End" || event.key === "ArrowRight") &&
     event.shiftKey &&
     !event.altKey &&
     !event.ctrlKey &&

@@ -1,14 +1,6 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
-import {
-  IconAlertTriangle,
-  IconCrosshair,
-  IconFocusCentered,
-  IconGridDots,
-  IconPlus,
-  IconScan,
-} from "@tabler/icons-react";
 import gsap from "gsap";
 import {
   type CSSProperties,
@@ -20,6 +12,7 @@ import {
   useState,
 } from "react";
 import { OpeningSequence } from "./opening/OpeningSequence";
+import { isOpeningSkipShortcut } from "./opening/opening-shortcuts";
 import { syncPresentationHash } from "./presentation-location";
 
 gsap.registerPlugin(useGSAP);
@@ -29,6 +22,7 @@ type MotionKind = "rise" | "grow-x" | "grow-y" | "fade" | "wipe";
 const PRESENTATION_WIDTH = 1920;
 const PRESENTATION_HEIGHT = 1080;
 const OPENING_DEMO_SLIDE_ID = "opening-demo";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 type SlideDefinition = {
   id: string;
@@ -67,199 +61,6 @@ function Reveal({
   );
 }
 
-const CONTROL_CHART_WIDTH = 870;
-const CONTROL_CHART_HEIGHT = 704;
-
-const controlChartPoints = {
-  explore: [
-    [12, 508],
-    [96, 422],
-    [127, 381],
-    [157, 338],
-    [202, 308],
-    [242, 260],
-    [297, 229],
-  ],
-  risk: [
-    [297, 229],
-    [362, 251],
-    [391, 307],
-    [433, 340],
-    [474, 369],
-  ],
-  control: [
-    [474, 369],
-    [512, 382],
-    [548, 362],
-    [587, 322],
-    [631, 276],
-    [679, 228],
-    [731, 178],
-    [787, 157],
-    [852, 92],
-  ],
-} satisfies Record<string, [number, number][]>;
-
-function drawControlPath(
-  context: CanvasRenderingContext2D,
-  points: [number, number][],
-  color: string,
-  options: { arrow?: boolean; skipFirstMarker?: boolean } = {},
-) {
-  context.save();
-  context.strokeStyle = color;
-  context.lineWidth = 3;
-  context.lineCap = "round";
-  context.lineJoin = "round";
-  context.beginPath();
-  points.forEach(([x, y], index) => {
-    if (index === 0) context.moveTo(x, y);
-    else context.lineTo(x, y);
-  });
-  context.stroke();
-
-  const lastMarkerIndex = options.arrow ? points.length - 2 : points.length - 1;
-  points.forEach(([x, y], index) => {
-    if ((options.skipFirstMarker && index === 0) || index > lastMarkerIndex) {
-      return;
-    }
-    context.beginPath();
-    context.arc(x, y, 4.5, 0, Math.PI * 2);
-    context.fillStyle = "#0a1013";
-    context.fill();
-    context.lineWidth = 2.5;
-    context.strokeStyle = color;
-    context.stroke();
-  });
-
-  if (options.arrow) {
-    const [endX, endY] = points.at(-1) ?? [0, 0];
-    const [previousX, previousY] = points.at(-2) ?? [0, 0];
-    const angle = Math.atan2(endY - previousY, endX - previousX);
-    const arrowSize = 19;
-    context.beginPath();
-    context.moveTo(
-      endX - arrowSize * Math.cos(angle - Math.PI / 5),
-      endY - arrowSize * Math.sin(angle - Math.PI / 5),
-    );
-    context.lineTo(endX, endY);
-    context.lineTo(
-      endX - arrowSize * Math.cos(angle + Math.PI / 5),
-      endY - arrowSize * Math.sin(angle + Math.PI / 5),
-    );
-    context.lineWidth = 4;
-    context.strokeStyle = color;
-    context.stroke();
-  }
-  context.restore();
-}
-
-function ControlChartCanvas({
-  layer,
-}: {
-  layer: "base" | "explore" | "risk" | "control";
-}) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = CONTROL_CHART_WIDTH * pixelRatio;
-    canvas.height = CONTROL_CHART_HEIGHT * pixelRatio;
-    canvas.style.width = `${CONTROL_CHART_WIDTH}px`;
-    canvas.style.height = `${CONTROL_CHART_HEIGHT}px`;
-
-    const context = canvas.getContext("2d");
-    if (!context) return;
-    context.scale(pixelRatio, pixelRatio);
-
-    if (layer === "base") {
-      context.save();
-      context.strokeStyle = "rgba(76, 91, 95, 0.16)";
-      context.lineWidth = 1;
-      for (let x = 12; x <= 852; x += 48) {
-        context.beginPath();
-        context.moveTo(x, 12);
-        context.lineTo(x, 508);
-        context.stroke();
-      }
-      for (let y = 28; y <= 508; y += 48) {
-        context.beginPath();
-        context.moveTo(12, y);
-        context.lineTo(858, y);
-        context.stroke();
-      }
-
-      context.strokeStyle = "rgba(186, 190, 185, 0.82)";
-      context.lineWidth = 1.5;
-      context.beginPath();
-      context.moveTo(12, 508);
-      context.lineTo(12, 12);
-      context.moveTo(12, 12);
-      context.lineTo(2, 24);
-      context.moveTo(12, 12);
-      context.lineTo(22, 24);
-      context.moveTo(12, 508);
-      context.lineTo(858, 508);
-      context.moveTo(858, 508);
-      context.lineTo(846, 498);
-      context.moveTo(858, 508);
-      context.lineTo(846, 518);
-      context.stroke();
-
-      context.setLineDash([7, 7]);
-      context.strokeStyle = "rgba(168, 170, 166, 0.44)";
-      context.lineWidth = 1;
-      context.beginPath();
-      context.moveTo(12, 341);
-      context.lineTo(858, 341);
-      context.moveTo(266, 105);
-      context.lineTo(266, 696);
-      context.moveTo(545, 105);
-      context.lineTo(545, 696);
-      context.stroke();
-      context.restore();
-    } else if (layer === "explore") {
-      drawControlPath(context, controlChartPoints.explore, "#e8e7e0");
-    } else if (layer === "risk") {
-      drawControlPath(context, controlChartPoints.risk, "#ff7f62", {
-        skipFirstMarker: true,
-      });
-    } else {
-      drawControlPath(context, controlChartPoints.control, "#c5ff3d", {
-        arrow: true,
-        skipFirstMarker: true,
-      });
-    }
-  }, [layer]);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="control-chart__canvas"
-      aria-hidden="true"
-    />
-  );
-}
-
-function StageDots({
-  active,
-  count = 5,
-}: {
-  active: number[];
-  count?: number;
-}) {
-  return (
-    <div className="stage-dots" aria-hidden="true">
-      {Array.from({ length: count }, (_, index) => (
-        <span key={index} data-active={active.includes(index)} />
-      ))}
-    </div>
-  );
-}
-
 function Node({
   index,
   title,
@@ -280,35 +81,18 @@ function Node({
   );
 }
 
-function Metric({
-  label,
-  value,
-  tone = "default",
-}: {
-  label: string;
-  value: string;
-  tone?: "default" | "active" | "danger";
-}) {
-  return (
-    <div className={`metric metric--${tone}`}>
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
-
 const slides: SlideDefinition[] = [
   {
     id: "graph-cover",
     section: "第一部分 / 趋势",
     title: "从 Loop 到 Graph",
-    conclusion: "Agent 工程的重心，正在从单个执行循环迁移到多执行单元协作。",
+    conclusion: "单个执行单元越能干，瓶颈越容易跑到它们之间。",
     frameCount: 4,
     notes: [
-      "第一部分先看当前 Agent 工程正在发生什么变化：一个 Loop 已经不再是全部。",
-      "Graph 把规划后的任务分给多个执行单元，并明确它们的并行与依赖关系。",
-      "结果在验证节点汇合，通过才完成；验证不只是流程的最后一步，而是系统的门。",
-      "失败只重试相关节点，高风险则把控制权交给人；Graph Engineering 设计的正是这些关系。",
+      "第一部分先聊 Graph Engineering 为什么会在现在出现。",
+      "一个 Loop 能处理单个执行单元，任务再大，就得管多个单元怎样并行、依赖和汇合。",
+      "结果在验证节点碰头，通过才算完成；某个分支失败，也只重试相关节点。",
+      "高风险任务把控制权交给人。Graph Engineering 设计的，就是这些执行单元之间的关系。",
     ],
     visual: (
       <div className="graph-cover-layout">
@@ -319,7 +103,7 @@ const slides: SlideDefinition[] = [
             <br />
             到 <b>Graph</b>
           </h1>
-          <p>Agent 工程的重心，正在从单个执行循环迁移到多执行单元协作。</p>
+          <p>单个执行单元越能干，瓶颈越容易跑到它们之间。</p>
         </div>
         <div className="graph-cover-network" aria-hidden="true">
           <div className="graph-cover-network__header">
@@ -388,8 +172,8 @@ const slides: SlideDefinition[] = [
           </Reveal>
         </div>
         <Reveal step={3} className="graph-cover-thesis" motion="fade">
-          <span>不是更多 Agent</span>
-          <strong>而是更清楚的控制关系</strong>
+          <span>Agent 数量可以增加</span>
+          <strong>控制关系要跟着写清楚</strong>
         </Reveal>
       </div>
     ),
@@ -397,14 +181,14 @@ const slides: SlideDefinition[] = [
   {
     id: "engineering-layers",
     section: "趋势 / 工程尺度",
-    title: "工程对象正在不断向外扩展",
-    conclusion: "Graph 没有替代前面的能力，而是在更大的尺度上组织它们。",
+    title: "工程范围在一层层往外扩",
+    conclusion: "Graph 把前面几层放进同一套协作关系里。",
     frameCount: 4,
     notes: [
-      "Prompt 关注一次调用中的表达，Context 关注模型此刻应该知道什么。",
-      "Harness 为 Agent 提供工具、权限、沙箱和日志环境。",
-      "Loop 设计验证、反馈、重试和停止，让一个执行单元持续收敛。",
-      "Graph 再向外一层，协调多个执行单元之间的关系。",
+      "Prompt 管一次调用里的指令怎么写，Context 管模型此刻该知道什么。",
+      "Harness 再往外一层，处理工具、权限、沙箱和日志这些运行环境。",
+      "Loop 负责验证、反馈、重试和停止，让一个执行单元自己收敛。",
+      "到了 Graph，问题变成多个执行单元之间怎么配合。",
     ],
     visual: (
       <div className="engineering-layers-layout">
@@ -445,13 +229,13 @@ const slides: SlideDefinition[] = [
     id: "loop-to-graph",
     section: "趋势 / 协作",
     title: "Loop 负责收敛，Graph 负责协作",
-    conclusion: "Graph 不替代 Loop：Graph 组织协作，Loop 负责收敛。",
+    conclusion: "Graph 管执行单元之间，Loop 管每个执行单元内部。",
     frameCount: 4,
     notes: [
-      "一个 Loop 围绕一个目标计划、执行、观察和验证，根据反馈持续收敛。",
-      "当尺度扩大，一个目标变成多个角色，整体重跑变成局部恢复，继续执行也可能变成人工交接。",
-      "Graph 负责组织这些执行单元之间的依赖和汇合，而其中的 Worker 仍然运行自己的 Loop。",
-      "所以两者不是替代关系：Graph 组织协作，Loop 负责收敛。",
+      "一个 Loop 围绕一个目标计划、执行、观察和验证，再按反馈调整下一步。",
+      "任务扩大以后，一个目标会拆给多个角色；失败时不必整体重跑，还可能需要人工接手。",
+      "Graph 管这些执行单元怎样依赖和汇合，里面的 Worker 仍然跑着自己的 Loop。",
+      "两层各管一段：Graph 管协作，Loop 管收敛。",
     ],
     visual: (
       <div className="loop-graph-layout">
@@ -518,8 +302,8 @@ const slides: SlideDefinition[] = [
           </div>
         </Reveal>
         <Reveal step={3} className="loop-graph-thesis" motion="fade">
-          <span>不是替代关系</span>
-          <strong>Graph 组织协作，Loop 负责收敛</strong>
+          <span>两层各管一段</span>
+          <strong>Graph 管协作，Loop 管收敛</strong>
         </Reveal>
       </div>
     ),
@@ -527,15 +311,15 @@ const slides: SlideDefinition[] = [
   {
     id: "graph-anatomy",
     section: "趋势 / 执行图",
-    title: "一张执行图，要让四件事显式",
-    conclusion: "重点不是画出节点和边，而是让控制关系显式、可检查。",
+    title: "一张执行图，至少要答清四个问题",
+    conclusion: "图好不好看不重要，控制关系要能看见、能检查、能恢复。",
     frameCount: 5,
     notes: [
-      "第一个问题是 Node：到底由谁执行，可以是代码、模型、Agent、工具或人。",
-      "第二个问题是 Edge：谁依赖谁，哪里顺序、分支、并行、循环或者等待。",
-      "第三个问题是 State：跨节点传递哪些事实，而不是继续依赖一长串对话。",
-      "第四个问题是 Controller：下一步继续、重规划、转人工还是安全终止。",
-      "Graph Engineering 让这些原本藏在上下文和 if/else 里的关系成为一等对象。",
+      "第一个问题，Node：谁来执行？可以是代码、模型、Agent、工具，也可以是人。",
+      "第二个问题，Edge：谁依赖谁？哪里有分支、并行、循环或者等待？",
+      "第三个问题，State：节点之间传什么事实？这些内容不能一直埋在对话里。",
+      "第四个问题，Controller：下一步继续、重规划、转人工，还是安全终止？",
+      "Graph Engineering 把原本藏在上下文和 if/else 里的关系摆到了台面上。",
     ],
     visual: (
       <div className="graph-anatomy-layout">
@@ -629,8 +413,8 @@ const slides: SlideDefinition[] = [
           </Reveal>
         </div>
         <Reveal step={4} className="anatomy-conclusion" motion="grow-x">
-          <span>节点负责完成任务</span>
-          <strong>图负责让整个系统值得信任</strong>
+          <span>节点负责做任务</span>
+          <strong>图负责管住整个系统</strong>
         </Reveal>
       </div>
     ),
@@ -639,13 +423,13 @@ const slides: SlideDefinition[] = [
     id: "uncertain-nodes",
     section: "趋势 / 新的执行对象",
     title: "Agent 节点：进程成功，不等于任务完成",
-    conclusion: "进程成功只代表模型给出了输出，不代表任务已经正确完成。",
+    conclusion: "200 OK 只能证明有输出，不能证明任务做对了。",
     frameCount: 4,
     notes: [
-      "确定性节点执行 SQL、HTTP 或脚本，Exit code、Schema 和测试通常可以直接判断结果。",
-      "Agent 节点即使返回 200 OK，也只说明它产生了输出，事实和证据仍然可能有问题。",
-      "因此系统必须区分运行成功和任务完成，语言流畅、结构完整都不是正确性的证据。",
-      "开放判断可以交给模型，权限、预算、Schema、证据门和审批必须由系统或人掌握。",
+      "确定性节点执行 SQL、HTTP 或脚本，Exit code、Schema 和测试通常就能判断结果。",
+      "Agent 节点就算返回 200 OK，也只说明它交了东西，事实和证据仍可能有问题。",
+      "所以系统得把运行成功和任务完成分开。写得顺、结构齐，都不能证明结果正确。",
+      "开放问题可以交给模型，权限、预算、Schema、证据门和审批要握在系统或人手里。",
     ],
     visual: (
       <div className="uncertain-layout">
@@ -690,15 +474,15 @@ const slides: SlideDefinition[] = [
         <Reveal step={2} className="semantic-gap" motion="fade">
           <span>两种成功</span>
           <div><b>运行成功</b><strong>≠</strong><b>任务完成</b></div>
-          <p>语言流畅、结构完整，仍然可能事实错误</p>
+          <p>写得顺、结构齐，事实仍然可能有错</p>
         </Reveal>
         <Reveal step={3} className="control-boundary">
           <div>
-            <span>模型负责开放判断</span>
+            <span>模型处理开放问题</span>
             <b>任务拆解 · 语义路由 · 探索策略</b>
           </div>
           <div>
-            <span>系统和人负责硬约束</span>
+            <span>系统和人守住硬约束</span>
             <b>权限 · 预算 · Schema · 证据门 · 审批</b>
           </div>
         </Reveal>
@@ -709,13 +493,13 @@ const slides: SlideDefinition[] = [
     id: "dynamic-workflows",
     section: "趋势 / Dynamic Workflows",
     title: "生成编排，不等于获得可靠性",
-    conclusion: "Dynamic Workflows 回答怎样运行，Graph Engineering 回答怎样可信。",
+    conclusion: "Dynamic Workflows 负责运行，Graph Engineering 负责约束怎么运行。",
     frameCount: 4,
     notes: [
-      "Dynamic Workflows 是一种具体运行机制：它会根据任务生成 JavaScript 编排脚本。",
-      "脚本负责循环、分支、并行和中间结果，并调度多个子 Agent 完成具体工作。",
-      "Graph Engineering 位于工程方法层，还要设计契约、权限、证据、恢复和人工审批。",
-      "两者不是并列组件：自动生成并运行编排，不等于自动获得可靠性。",
+      "Dynamic Workflows 是一种运行机制，会按任务生成 JavaScript 编排脚本。",
+      "循环、分支、并行和中间结果交给脚本，子 Agent 去做具体工作。",
+      "Graph Engineering 还要给这套编排设规则：契约、权限、证据、恢复和人工审批。",
+      "脚本能自动生成并运行，可靠性却不会顺带出现。",
     ],
     visual: (
       <div className="dynamic-layout">
@@ -751,7 +535,7 @@ const slides: SlideDefinition[] = [
           <div className="dynamic-layer-heading dynamic-layer-heading--governance">
             <span>02 / 方法层</span>
             <strong>Graph Engineering</strong>
-            <b>设计约束与治理规则</b>
+            <b>给编排设规则</b>
           </div>
           <div className="engineering-guardrails">
             {["输入输出契约", "权限与预算", "证据与验证", "局部恢复", "人工审批"].map((item) => (
@@ -760,7 +544,7 @@ const slides: SlideDefinition[] = [
           </div>
         </Reveal>
         <Reveal step={3} className="dynamic-thesis" motion="fade">
-          <span>同一套系统 / 两个层次</span>
+          <span>同一套系统 / 各管一层</span>
           <div><b>自动生成编排</b><strong>≠</strong><b>自动获得可靠性</b></div>
         </Reveal>
       </div>
@@ -769,14 +553,14 @@ const slides: SlideDefinition[] = [
   {
     id: "graph-when",
     section: "趋势 / 工程判断",
-    title: "满足需求就停，不要默认升级到 Graph",
-    conclusion: "Graph 的每一条边，都应该对应真实约束。",
+    title: "够用就停，不要默认上 Graph",
+    conclusion: "Graph 里的每一条边，都得对应一条真实约束。",
     frameCount: 4,
     notes: [
-      "路径稳定、任务很短、整体重跑可接受时，先从 Workflow 开始。",
-      "只有路径无法预先写完、一个 Agent 需要根据反馈收敛时，才升级到 Loop。",
-      "只有复杂度溢出一个执行单元，出现多角色、真实依赖、局部恢复、审批或持久状态时，才升级到 Graph。",
-      "每次升级都需要任务约束作为证据；当前结构已经满足可靠性，就停在这里。",
+      "任务很短、路径稳定，失败以后整体重跑也能接受，就用 Workflow。",
+      "路径写不死，需要一个 Agent 看着反馈继续走，再用 Loop。",
+      "等到任务真的出现多角色、依赖、局部恢复、审批或者持久状态，才值得上 Graph。",
+      "每次升级都要拿出一条真实约束。当前结构已经够用，就停在这里。",
     ],
     visual: (
       <div className="graph-when-layout">
@@ -821,10 +605,10 @@ const slides: SlideDefinition[] = [
           <small><span>结构成本</span><b>高</b></small>
         </Reveal>
         <Reveal step={3} className="structure-rule" motion="grow-x">
-          <span>真正的工程判断</span>
+          <span>升级前先问</span>
           <div>
-            <b>每次升级，都要有任务约束作为证据</b>
-            <strong>用最低的结构成本，换取任务真正需要的可靠性</strong>
+            <b>任务里真的有这条约束吗？</b>
+            <strong>结构已经够用，就停在这里</strong>
           </div>
         </Reveal>
       </div>
@@ -833,20 +617,20 @@ const slides: SlideDefinition[] = [
   {
     id: "agent-plugins",
     section: "趋势 / 能力交付",
-    title: "Agent Plugins：统一的是包装",
-    conclusion: "Graph 解决运行时协作，Plugin 解决交付时兼容。",
+    title: "Agent Plugins：把包装统一起来",
+    conclusion: "Graph 管任务怎么跑，Plugin 管能力怎么交付。",
     frameCount: 5,
     notes: [
-      "现在安装 Skill 时，往往先选择目标 Agent；同一套能力会被目录、清单和 MCP 配置复制成多份。",
-      "Agent Plugin 把 plugin.json、skills 和 MCP 配置放进一个标准包；它统一的是包装，而不是发明新的能力。",
-      "兼容规范的 Agent 可以发现并加载同一个包，因此可以先打包能力，再决定交付到哪里。",
-      "边界仍在客户端：安装入口、权限、安全策略、UX 和客户端专属扩展并不会自动统一。",
-      "只有相关能力需要一起跨客户端交付时才值得做 Plugin；Graph 管运行时协作，Plugin 管交付时兼容。",
+      "现在安装 Skill，通常得先选目标 Agent；换一个客户端，目录、清单和 MCP 配置就要再整理一遍。",
+      "Agent Plugin 把 plugin.json、skills 和 MCP 配置装进一个标准包，统一的是外面的包装。",
+      "兼容规范的 Agent 都能发现并加载这个包，所以能力可以先打包，再决定交到哪里。",
+      "安装入口、权限、安全策略、UX 和专属扩展，仍然由各客户端自己决定。",
+      "一组相关能力需要跨客户端交付时，Plugin 才派得上用场。Graph 管任务怎么跑，Plugin 管能力怎么交付。",
     ],
     visual: (
       <div className="plugin-layout">
         <div className="plugin-thesis">
-          <span>一套工作方式成熟以后</span>
+          <span>一套工作方式想交给更多 Agent</span>
           <strong>从 <b>N 份客户端适配</b>，到 <b>1 个标准包</b></strong>
         </div>
         <div className="plugin-before">
@@ -902,7 +686,7 @@ const slides: SlideDefinition[] = [
           </div>
         </Reveal>
         <Reveal step={4} className="plugin-bridge" motion="fade">
-          <span>不是前后两代，而是两个工程方向</span>
+          <span>它们处理两个不同问题</span>
           <div>
             <b><em>Graph</em>运行时 / 这次任务怎样协作</b>
             <b><em>Plugin</em>交付时 / 这套能力怎样兼容</b>
@@ -914,101 +698,48 @@ const slides: SlideDefinition[] = [
   {
     id: "control",
     section: "第二部分 / 我的实践",
-    title: "最初：慢，但是还在控制下",
-    conclusion: "速度很慢，但每一行代码都经过我的手。",
+    title: "先交代一下样本量",
+    conclusion: "接近 230 亿 Token，是后面这些经验的样本量。",
     frameCount: 4,
     notes: [
-      "最初，我在网页上让模型输出代码，再复制、运行、粘贴报错。",
-      "公司的 VDI 不能直接复制，有时每一行代码都要自己手敲。",
-      "后来安装 Claude Code、接入 GLM，并照着一个 Claw 项目造自己的轮子。",
-      "第一次说出‘开始实现吧’时，执行速度突然发生了变化。",
+      "进入第二部分之前，我先报一下样本量。",
+      "过去 78 天，我用了 22.9B Token，接近 230 亿；单日峰值大约 12 亿。",
+      "这组数字说明，后面的经验来自持续、高强度的使用，也来自一遍遍踩坑。",
+      "用得越多，我越确定：生成早就够快了，接下来要守住的是对代码库的控制。故事从最初的复制粘贴开始。",
     ],
     visual: (
-      <div className="cover-layout">
-        <div className="cover-copy">
-          <span className="cover-section">第二部分 / 我的实践</span>
-          <h1>
-            <span>从复制粘贴</span>
-            <span>到自己造一个 Claw</span>
-          </h1>
+      <div className="practice-proof-layout">
+        <div className="practice-proof-copy">
+          <span>SECOND PART / FIELD EVIDENCE</span>
+          <h1>22.9B</h1>
+          <b>TOKENS</b>
+          <Reveal step={1} className="practice-proof-scale" motion="fade">
+            <strong>接近 230 亿</strong>
+            <small>LIFETIME TOKEN USAGE</small>
+          </Reveal>
+          <Reveal step={2} className="practice-proof-stats">
+            <div><b>78 DAYS</b><span>连续使用</span></div>
+            <div><b>1.2B</b><span>单日峰值 / 约 12 亿</span></div>
+          </Reveal>
         </div>
-        <div className="cover-signature">
-          <span className="cover-signature__mark">
-            <IconPlus size={27} stroke={1.7} aria-hidden="true" />
-          </span>
-          <p>VIBE CODING / FIELD NOTES</p>
-        </div>
-        <div
-          className="control-chart"
-          role="img"
-          aria-label="速度提升后控制力先下降，再通过工程判断重新建立控制"
-        >
-          <ControlChartCanvas layer="base" />
-          <span className="control-chart__axis control-chart__axis--speed">
-            速度
-          </span>
-          <span className="control-chart__axis control-chart__axis--control">
-            控制力
-          </span>
-          <Reveal
-            step={1}
-            className="control-chart__layer"
-            motion="wipe"
-            wipeFrom={1}
-          >
-            <ControlChartCanvas layer="explore" />
-          </Reveal>
-          <Reveal
-            step={2}
-            className="control-chart__layer"
-            motion="wipe"
-            wipeFrom={34}
-          >
-            <ControlChartCanvas layer="risk" />
-          </Reveal>
-          <Reveal
-            step={3}
-            className="control-chart__layer"
-            motion="wipe"
-            wipeFrom={53}
-          >
-            <ControlChartCanvas layer="control" />
-          </Reveal>
-
-          <Reveal step={2} className="risk-marker" motion="fade">
-            <IconScan size={88} stroke={1.2} aria-hidden="true" />
-            <IconAlertTriangle
-              className="risk-marker__warning"
-              size={37}
-              stroke={1.7}
-              aria-hidden="true"
-            />
-          </Reveal>
-
-          <Reveal step={1} className="chart-stage chart-stage--explore">
-            <IconGridDots size={43} stroke={1.5} aria-hidden="true" />
-            <div>
-              <strong>手动搬运</strong>
-              <span>慢，但知道每一步</span>
-              <StageDots active={[0, 1]} count={4} />
-            </div>
-          </Reveal>
-          <Reveal step={2} className="chart-stage chart-stage--risk">
-            <IconCrosshair size={43} stroke={1.4} aria-hidden="true" />
-            <div>
-              <strong>开始 Vibe</strong>
-              <span>Claude Code + GLM</span>
-              <StageDots active={[2]} />
-            </div>
-          </Reveal>
-          <Reveal step={3} className="chart-stage chart-stage--control">
-            <IconFocusCentered size={43} stroke={1.5} aria-hidden="true" />
-            <div>
-              <strong>执行权转移</strong>
-              <span>“开始实现吧”</span>
-              <StageDots active={[2, 3]} />
-            </div>
-          </Reveal>
+        <Reveal step={1} className="practice-proof-image" motion="fade">
+          <div
+            className="practice-proof-snapshot"
+            role="img"
+            aria-label="过去 78 天累计使用 22.9B Token 的使用统计截图"
+            style={{
+              backgroundImage: `url('${BASE_PATH}/images/token-usage.webp')`,
+            }}
+          />
+          <span>USAGE SNAPSHOT / 78 DAYS</span>
+        </Reveal>
+        <Reveal step={3} className="practice-proof-thesis" motion="grow-x">
+          <span>这组数字代表样本量</span>
+          <strong>生成已经够快；接下来要守住的是控制力。</strong>
+        </Reveal>
+        <div className="practice-proof-rule" aria-hidden="true">
+          <i />
+          <span>REAL USAGE → FIELD NOTES</span>
         </div>
       </div>
     ),
@@ -1017,14 +748,14 @@ const slides: SlideDefinition[] = [
     id: "manual-loop",
     section: "实践 / 第一阶段",
     title: "说完需求，然后“开始实现吧”",
-    conclusion: "执行权交给了 Agent，注意力却被状态检查绑住了。",
+    conclusion: "Agent 开始连续执行，我却成了状态检查员。",
     frameCount: 5,
     notes: [
-      "想到一个功能，就把需求告诉 Agent，让它开始实现。",
-      "Agent 可以连续完成搜索、定位和修改，执行权第一次真正交了出去。",
-      "范围小的时候，从运行、修复到完成都非常顺滑；但连续执行也把中间状态藏了起来。",
-      "我不知道还要多久、有没有卡住、是不是在等确认，于是每隔十几分钟就回来一次。",
-      "原来是自己执行，现在变成不断检查状态；我开始追求一个能持续跑到完成的 Agent Loop。",
+      "想到一个功能，我就把需求告诉 Agent，然后说：开始实现吧。",
+      "小功能做起来很顺，搜索、定位、修改和调试都能一口气完成。",
+      "可连续执行也把中间状态藏了起来，我不知道它还要跑多久。",
+      "每隔十几分钟，我就回来瞄一眼：做完了吗？卡住了吗？是不是在等我确认？",
+      "以前是我自己干活，现在成了状态检查员。于是我开始找一个能一直跑到完成的 Agent Loop。",
     ],
     visual: (
       <div className="manual-layout">
@@ -1086,10 +817,10 @@ const slides: SlideDefinition[] = [
           <div><b>在等我吗？</b><em>UNKNOWN</em></div>
         </Reveal>
         <Reveal step={4} className="manual-insight" motion="grow-x">
-          <span>真正的变化</span>
+          <span>角色变化</span>
           <div className="manual-gain">
             <em>获得</em>
-            <b>小功能：顺滑、快</b>
+            <b>小功能做得更快</b>
           </div>
           <div className="manual-cost">
             <em>代价</em>
@@ -1106,11 +837,11 @@ const slides: SlideDefinition[] = [
     conclusion: "Loop 运行得越久，对目标、边界、验证和停止条件的要求越高。",
     frameCount: 5,
     notes: [
-      "我希望给出一个目标以后，Agent 能持续工作到真正完成。",
-      "工作流变成 explore 或 brainstorming，再 propose，最后交给 goal。",
-      "一次 Goal 可以自己执行一两个小时。",
-      "当时关注的是吞吐量：更久、更少打断、更快进入下一个功能。",
-      "我没有意识到，长循环正在放大边界和验证问题。",
+      "这时我遇到了 /goal。它会持续调用 Agent Loop，直到自己判断目标已经完成。",
+      "工作流变成先 explore 或 brainstorming，再 propose，最后让 /goal 按 Spec 一直做下去。",
+      "一次 Goal 能自己跑一两个小时。结束以后，我简单试一下功能，就马上开下一个 Goal。",
+      "当时我满脑子都是吞吐量：多跑一会儿，少回来找我，更快进入下一个功能。",
+      "我忽略了一件事：Loop 跑得越久，目标、边界、验证和停止条件就越不能含糊。",
     ],
     visual: (
       <div className="agent-layout">
@@ -1119,97 +850,128 @@ const slides: SlideDefinition[] = [
           <span>开始实现</span>
           <span>回来查看</span>
         </div>
-        <Reveal step={1} className="agent-pipeline">
-          {["/opsx:explore", "/opsx:propose", "/goal", "Agent Loop"].map((item, index) => (
-            <Node
-              key={item}
-              index={`0${index + 1}`}
-              title={item}
-              tone={index === 3 ? "active" : "default"}
-            />
+        <div
+          className="agent-pipeline"
+          aria-label="从探索和方案生成进入 goal，再由 Agent Loop 持续执行"
+        >
+          {[
+            { title: "/opsx:explore", detail: "或 brainstorming" },
+            { title: "/opsx:propose", detail: "生成方案" },
+            { title: "/goal", detail: "按 Spec 实现" },
+            { title: "Agent Loop", detail: "持续执行" },
+          ].map((item, index, items) => (
+            <Reveal
+              key={item.title}
+              step={1}
+              className="agent-pipeline__stage"
+            >
+              <Node
+                index={`0${index + 1}`}
+                title={item.title}
+                detail={item.detail}
+                tone={index === items.length - 1 ? "active" : "default"}
+              />
+              {index < items.length - 1 ? (
+                <span className="agent-pipeline__arrow" aria-hidden="true">
+                  →
+                </span>
+              ) : null}
+            </Reveal>
           ))}
-        </Reveal>
+        </div>
         <Reveal
           step={2}
-          className="pipeline-compression"
+          className="agent-loop-track"
           motion="grow-x"
         >
-            <span>自主执行 / 一次持续 1–2 小时</span>
+          <span>根据 Spec 持续实现</span>
+          <b>↻ 直到目标完成</b>
+          <span>自主执行 / 一次持续 1–2 小时</span>
         </Reveal>
-          <Reveal step={3} className="meter-stack">
-            <div className="meter-row">
-              <span>吞吐量</span>
-              <i style={{ "--meter": "94%" } as CSSProperties} />
-            </div>
-            <div className="meter-row">
-              <span>人工介入</span>
-              <i style={{ "--meter": "22%" } as CSSProperties} />
-            </div>
-            <div className="meter-row meter-row--danger">
-              <span>边界清晰度</span>
-              <i style={{ "--meter": "34%" } as CSSProperties} />
-            </div>
-          </Reveal>
-          <Reveal step={4} className="question-stage" motion="fade">
-            <span>当时我只关心</span>
-            <strong>怎样让它跑得更久？</strong>
-          </Reveal>
+        <Reveal step={3} className="agent-tradeoff">
+          <div>
+            <span>吞吐量</span>
+            <strong>更高</strong>
+          </div>
+          <div>
+            <span>人工介入</span>
+            <strong>更少</strong>
+          </div>
+          <div className="agent-tradeoff__risk">
+            <span>同时被放大</span>
+            <strong>边界 · 验证 · 停止条件</strong>
+          </div>
+        </Reveal>
+        <Reveal step={4} className="question-stage" motion="fade">
+          <span>当时我只关心</span>
+          <strong>怎样让它跑得更久？</strong>
+        </Reveal>
       </div>
     ),
   },
   {
     id: "entropy",
     section: "实践 / 失控现场",
-    title: "一个周末：两个 Goal，执行了 20 个小时",
-    conclusion: "功能完成了，但我已经不知道代码库里有几套逻辑。",
+    title: "一个周末：两个 Goal，跑了约 20 小时",
+    conclusion: "功能做出来了，代码库里却留下几套对不上的逻辑。",
     frameCount: 6,
     notes: [
-      "两个 Goal 在一个周末一共执行了大约 20 个小时。",
-      "接近一千个 Commit，产生了几十个 PR。",
-      "表面上功能需求基本完成。",
-      "但新旧逻辑、中间状态和重复路径被混在一起。",
-      "每次迭代都开始重复执行、返工、再执行。",
-      "速度已经很快，而我几乎失去了对项目的控制。",
+      "这些问题在一个周末集中爆发，代码库给我算了一次总账。",
+      "这张 Code Frequency 很直观：AI 写得快，改得也快，代码增删量在短时间里突然冲高。",
+      "两个 Goal 一共跑了大约 20 个小时。",
+      "接近一千个 Commit、几十个 PR，功能看上去都做完了。",
+      "可吞吐量越高，我越看不清执行过程和中间状态。",
+      "旧路径、中间状态和重复逻辑混在一起。功能完成了，工程没有完成，项目事实上已经失控。",
     ],
     visual: (
       <div className="incident-layout">
-        <div className="command-chain">
+        <div className="incident-goals">
           <code>GOAL / 01</code>
           <span>+</span>
           <code>GOAL / 02</code>
           <span>→</span>
-          <strong>整个周末</strong>
+          <strong>整个周末 / 约 20H 持续执行</strong>
         </div>
-        <div className="incident-timeline">
-          <div className="timeline-axis">
-            <span>00:00</span>
-            <span>08:00</span>
-            <span>16:00</span>
-            <span>20:00</span>
+        <div className="incident-evidence">
+          <Reveal step={1} className="incident-frequency" motion="fade">
+            <div
+              className="incident-frequency__image"
+              role="img"
+              aria-label="代码增删频率在短时间内显著冲高的统计图"
+              style={{
+                backgroundImage: `url('${BASE_PATH}/images/Code%20frequency.png')`,
+              }}
+            />
+          </Reveal>
+          <div className="incident-story">
+            <Reveal step={2} className="incident-speed">
+              <span>WRITE / FAST</span>
+              <strong>20H</strong>
+              <p>两个 Goal 持续执行</p>
+            </Reveal>
+            <Reveal step={3} className="incident-throughput">
+              <div>
+                <strong>近千</strong>
+                <span>COMMIT</span>
+              </div>
+              <div>
+                <strong>数十</strong>
+                <span>PR</span>
+              </div>
+              <p>功能需求基本完成</p>
+            </Reveal>
+            <Reveal step={4} className="incident-control-loss">
+              <span>CONTROL / LOST</span>
+              <strong>功能完成 ≠ 工程完成</strong>
+              <p>吞吐量上升，可见性下降</p>
+            </Reveal>
           </div>
-          <Reveal step={1} className="timeline-progress timeline-progress--early" motion="grow-x">
-            <span>功能持续完成</span>
-          </Reveal>
-          <Reveal step={2} className="timeline-progress timeline-progress--late" motion="grow-x">
-            <span>Goal 仍在运行</span>
-          </Reveal>
-          <Reveal step={3} className="missing-checkpoints">
-            <span>?</span><span>?</span><span>?</span>
-          </Reveal>
-          <Reveal step={4} className="merge-event">控制能力 / 接近归零</Reveal>
         </div>
-        <Reveal step={2} className="incident-metrics">
-          <Metric label="运行时间" value="≈20H" />
-          <Metric label="COMMIT" value="≈1000" />
-          <Metric label="PR" value="数十" />
-          <Metric label="功能" value="完成" tone="active" />
-        </Reveal>
-        <Reveal step={5} className="debt-ledger">
-          {["旧逻辑", "中间状态", "重复路径", "兼容分支", "持续返工"].map((item, index) => (
+        <Reveal step={5} className="incident-debt-line" motion="grow-x">
+          <span>功能之外，还留下</span>
+          {["旧路径", "中间状态", "重复逻辑", "历史路径", "持续返工"].map((item) => (
             <div key={item}>
-              <span>0{index + 1}</span>
               <b>{item}</b>
-              <em>仍然存在</em>
             </div>
           ))}
         </Reveal>
@@ -1220,14 +982,14 @@ const slides: SlideDefinition[] = [
     id: "runaway",
     section: "实践 / 重建控制",
     title: "我用了整整一个星期，重构整个项目",
-    conclusion: "Vibe Coding 不是对着模型许愿，而是先把工程结构搭明白。",
+    conclusion: "执行能力上去以后，控制关系也要一起补上。",
     frameCount: 5,
     notes: [
-      "最后，我通过改变技术栈的方式，用一周彻底重构。",
-      "重新建立主路径、模块边界和对项目的理解。",
-      "这让我意识到，Vibe Coding 不是找到最强模型然后许愿。",
-      "我们要先搭清工程架构，再让 AI 补充实现细节。",
-      "关注点从‘怎样让它继续跑’转向‘怎样让它沿正确路径跑’。",
+      "功能虽然做出来了，我却已经无法判断下一步该改哪里。最后只能停下来，用整整一周重构。",
+      "我先换掉技术栈，切断已经维护不下去的旧路径。",
+      "然后重建唯一主路径，让后续改动知道该落在哪里。",
+      "模块边界重新清楚以后，我才恢复了对系统的理解。",
+      "这次重构让我明白：执行能力上去以后，需求、边界、上下文、测试、Hook 和 Review 也要一起补上。",
     ],
     visual: (
       <div className="gates-layout">
@@ -1235,6 +997,7 @@ const slides: SlideDefinition[] = [
           <span>重构之前</span>
           <i />
           <b>新旧逻辑混杂</b>
+          <b>主路径不清</b>
           <b>边界模糊</b>
           <b className="danger">无法继续判断</b>
         </div>
@@ -1243,16 +1006,13 @@ const slides: SlideDefinition[] = [
           <i />
           <Reveal step={1}><b>改变技术栈</b></Reveal>
           <Reveal step={2}><b>重建主路径</b></Reveal>
-          <Reveal step={3}>
-            <b>明确模块边界</b>
-            <b>恢复系统理解</b>
-          </Reveal>
+          <Reveal step={3}><b>明确模块边界</b></Reveal>
+          <Reveal step={3}><b>恢复系统理解</b></Reveal>
         </div>
-        <Reveal step={4} className="scarcity-words">
-          <strong>清晰需求</strong>
-          <strong>明确边界</strong>
-          <strong>正确上下文</strong>
-          <strong>测试与 Review</strong>
+        <Reveal step={4} className="rebuild-principle" motion="fade">
+          <span>GRAPH ENGINEERING / PRACTICE</span>
+          <strong>执行能力上去以后，控制关系也要一起补上</strong>
+          <p>清晰需求 · 明确边界 · 正确上下文 · 测试 · Hook · 人工 Review</p>
         </Reveal>
       </div>
     ),
@@ -1261,14 +1021,14 @@ const slides: SlideDefinition[] = [
     id: "gates",
     section: "经验 01 / 需求",
     title: "开发者正在变成技术产品经理",
-    conclusion: "让 AI 反过来提问，才能确认双方理解的是同一件事。",
+    conclusion: "让 AI 先拆、再问，我才知道它是不是真的听懂了。",
     frameCount: 5,
     notes: [
-      "构建软件最耗时间的步骤，经常不是写代码，而是搞明白需求。",
-      "过去是产品经理向开发解释需求，开发确认范围、工时和排期。",
-      "现在是开发者向 AI 描述产品目标，并让 AI 预估规模和风险。",
-      "更重要的是让 AI 反过来问问题，挑战模糊的需求。",
-      "开发者逐渐成为 AI 与最终产品之间的技术产品经理。",
+      "第一条经验很简单：先把需求搞明白。这往往比写代码更费时间。",
+      "以前是产品经理讲需求，开发再确认范围、工时和排期。",
+      "现在轮到开发者讲产品目标，让 AI 先拆出功能点、模块、分期和风险。",
+      "接着用 Grill Me 让它追着问。AI 问不出关键问题，我就不敢假设它真的听懂了。",
+      "开发者的位置也变了：我们逐渐成了 AI 与最终产品之间的技术产品经理。",
     ],
     visual: (
       <div className="role-shift-layout">
@@ -1288,17 +1048,17 @@ const slides: SlideDefinition[] = [
           <span>现在 / Agent Coding</span>
           <strong>开发者</strong>
           <i aria-hidden="true">→</i>
-          <b>目标、范围与风险</b>
+          <b>描述产品目标</b>
           <i aria-hidden="true">→</i>
           <strong>AI</strong>
-          <small>拆功能 · 找风险 · 反向提问</small>
+          <small>AI 先拆出：功能点 · 模块 · 分期 · 风险</small>
         </Reveal>
         <Reveal step={3} className="grill-card">
           <span>GRILL ME</span>
           <strong>别急着写。先追着我问。</strong>
           <div>
             <b>真正目标是什么？</b>
-            <b>这一期明确不做什么？</b>
+            <b>哪些内容明确不做？</b>
             <b>怎样才算完成？</b>
           </div>
         </Reveal>
@@ -1312,20 +1072,20 @@ const slides: SlideDefinition[] = [
   {
     id: "skills",
     section: "经验 02 / 边界",
-    title: "分阶段，并且显式确定边界",
-    conclusion: "每一期不仅要写清楚做什么，也要明确写出不做什么。",
+    title: "分阶段，把边界写下来",
+    conclusion: "每一期既要写做什么，也要写不做什么。",
     frameCount: 5,
     notes: [
-      "任务规模大到一定程度以后，必须分期并持久化规划。",
-      "第一期只做用户注册，并明确不做登录。",
-      "否则 Agent 很可能顺手实现高度相关的登录，留下两套逻辑。",
-      "功能边界之外，还要明确技术栈、测试、部署和文档版本。",
-      "结构成本要与任务寿命、风险和维护要求匹配。",
+      "任务大到一定程度，就该拆期，计划也要写进文档。",
+      "比如第一期只做用户注册，那就明写：不要实现登录。",
+      "不拦着，Agent 很可能顺手把登录也做了，最后留下两套对不上的逻辑。",
+      "功能边界之外，技术栈、测试、部署和文档版本也要定清楚。",
+      "任务活多久、风险多大、以后要不要维护，决定了我们该付多少结构成本。",
     ],
     visual: (
       <div className="risk-layout phase-layout">
         <div className="risk-axis">
-          <span>一个大型需求</span>
+          <span>一个大需求</span>
           <i />
           <span>可验证的小阶段</span>
         </div>
@@ -1363,47 +1123,60 @@ const slides: SlideDefinition[] = [
     id: "context-stack",
     section: "经验 03 / 图示",
     title: "一图胜千言",
-    conclusion: "把关系从自然语言里画出来，控制问题才真正可检查。",
+    conclusion: "关系画出来以后，并行、依赖和关卡都能检查。",
     frameCount: 4,
     notes: [
-      "流程图、状态图和模块关系图，既方便自己理解，也方便 AI。",
-      "长文字经常同时描述顺序、条件、异常和角色，容易遗漏。",
-      "变成图以后，并行、等待、循环和人工确认会明显很多。",
-      "我通常让 AI 使用 Mermaid 或 HTML 生成这些图。",
+      "一段长文字里经常藏着顺序、条件、异常和角色，人和 AI 都容易漏。",
+      "我一般直接让 AI 用 Mermaid 或 HTML 把它画出来。",
+      "关系一上图，哪里并行、谁要等谁、哪里会重试、哪里必须人工确认，一眼就能看到。",
+      "图的价值就在这里：把隐含关系摆到台面上，控制问题才有得检查。",
     ],
     visual: (
       <div className="diagram-layout">
         <div className="diagram-source">
-          <span>一段自然语言</span>
-          <p>
-            用户提交以后，前端和后端分别处理；后端失败时重试，成功后进入测试，
-            高风险结果还要等待人工确认……
-          </p>
+          <span>自然语言 / 隐含关系</span>
+          <blockquote>
+            提交后，前端与后端分别处理；后端失败就修复重试，成功后进入测试；
+            高风险结果等待人工确认。
+          </blockquote>
           <div>
-            <b>顺序？</b>
             <b>并行？</b>
-            <b>异常？</b>
+            <b>依赖？</b>
+            <b>循环？</b>
             <b>谁确认？</b>
           </div>
         </div>
-        <Reveal step={1} className="diagram-conversion" motion="grow-x">
-          <span>MERMAID / HTML</span>
+        <Reveal step={1} className="diagram-conversion" motion="fade">
+          <span>MERMAID<br />/ HTML</span>
           <strong>→</strong>
         </Reveal>
-        <Reveal step={2} className="diagram-canvas">
+        <Reveal
+          step={2}
+          className="diagram-canvas"
+        >
+          <span className="diagram-rel-label diagram-rel-label--parallel">并行</span>
+          <span className="diagram-rel-label diagram-rel-label--join">依赖汇合</span>
           <div className="diagram-node diagram-node--start">提交需求</div>
           <div className="diagram-node diagram-node--front">前端处理</div>
           <div className="diagram-node diagram-node--back">后端处理</div>
-          <div className="diagram-node diagram-node--test">自动测试</div>
-          <div className="diagram-node diagram-node--human">人工确认</div>
+          <div className="diagram-node diagram-node--test">
+            <b>自动测试</b>
+            <small>验证关卡</small>
+          </div>
+          <div className="diagram-node diagram-node--human">
+            <b>人工确认</b>
+            <small>高风险</small>
+          </div>
           <i className="diagram-edge diagram-edge--one" />
           <i className="diagram-edge diagram-edge--two" />
           <i className="diagram-edge diagram-edge--three" />
           <i className="diagram-edge diagram-edge--four" />
+          <i className="diagram-edge diagram-edge--five" />
           <span className="diagram-loop">失败 → 修复 → 重试</span>
         </Reveal>
         <Reveal step={3} className="diagram-benefit" motion="fade">
-          并行 · 依赖 · 循环 · 人工关卡，一眼可见
+          <span>关系画出来以后</span>
+          <strong>并行 · 依赖 · 循环 · 人工关卡，都能检查</strong>
         </Reveal>
       </div>
     ),
@@ -1415,11 +1188,11 @@ const slides: SlideDefinition[] = [
     conclusion: "Spec 决定从哪里开始，测试决定能不能继续往下走。",
     frameCount: 5,
     notes: [
-      "Spec 要写，它负责告诉 Agent 准备做什么。",
-      "高频修改中，真正约束不能破坏什么的，往往是测试。",
-      "文档可能过期，也可能被理解成另一回事；测试会直接失败。",
-      "单元测试、集成测试和 E2E 比一句自然语言提醒更可靠。",
-      "测试通过不等于最终正确，但比模型自我评价更可靠。",
+      "Spec 要写，它告诉 Agent 准备做什么。",
+      "可一旦开始高频修改，能守住旧行为、告诉它什么不能碰的，往往是测试。",
+      "文档可能过期，也可能被理解成另一回事；测试失败就直接得多。",
+      "单元测试、集成测试和 E2E，比一句自然语言提醒更靠得住。",
+      "测试全绿也不能证明最终结果一定正确，但模型说一句完成了，不算证据。",
     ],
     visual: (
       <div className="test-spec-layout">
@@ -1447,7 +1220,7 @@ const slides: SlideDefinition[] = [
           </div>
         </Reveal>
         <Reveal step={4} className="test-verdict" motion="fade">
-          <span>更重要的控制信号</span>
+          <span>测试给出的答案</span>
           <strong>失败，就不能继续</strong>
         </Reveal>
       </div>
@@ -1460,10 +1233,10 @@ const slides: SlideDefinition[] = [
     conclusion: "减少无意义的打断，但在边界、验证和合并处保留关卡。",
     frameCount: 4,
     notes: [
-      "Vibe Coding 很像间歇性的强化机制。",
-      "输入需求后，功能突然实现，就像钓鱼时大鱼突然上钩。",
-      "联调、切项目和到处查文档会持续打断状态。",
-      "更理想的是本地拥有可以快速验证的完整环境，同时保留工程关卡。",
+      "Vibe Coding 很像一种间歇奖励。",
+      "输入几句需求，功能突然跑起来，就像在河边等了半小时，突然有鱼上钩。",
+      "一会儿联调，一会儿切项目，中间还得到处翻文档，很难进入稳定状态。",
+      "我更喜欢在本地搭一个随时能验证的完整环境，同时在范围、预算、验证和合并处留好关卡。",
     ],
     visual: (
       <div className="flow-layout">
@@ -1479,7 +1252,7 @@ const slides: SlideDefinition[] = [
           <strong>上下文切换</strong>
         </Reveal>
         <Reveal step={3} className="flow-environment">
-          <span>理想环境</span>
+          <span>我想要的环境</span>
           <strong>本地前后端一致 · 快速验证 · 必要时使用 Mock</strong>
           <small>心流 ≠ Agent 无限运行</small>
         </Reveal>
@@ -1489,15 +1262,15 @@ const slides: SlideDefinition[] = [
   {
     id: "current-loop",
     section: "经验 06 / Hook",
-    title: "用 Hook 把边界变成硬约束",
-    conclusion: "能够机械执行的约束，就不要只依赖模型记住。",
+    title: "用 Hook 把边界写成规则",
+    conclusion: "能让系统执行的约束，就别只靠模型记住。",
     frameCount: 5,
     notes: [
       "主流 Coding Agent 都支持不同形式的 Hook。",
-      "例如任务只允许修改后端，或者禁止修改测试用例。",
-      "只写在 Prompt 中，Agent 遇到困难时仍可能选择最短路径。",
-      "Hook 可以在写入禁止目录时直接拦截。",
-      "Prompt 提高遵守边界的概率；Hook 把边界变成系统规则。",
+      "比如这次任务只能改后端，或者可以改生产代码，但不能碰测试。",
+      "这些要求只写在 Prompt 里，Agent 一遇到困难，还是可能走最短路径。",
+      "Hook 会在它准备写入禁止目录时直接拦住。",
+      "Prompt 只是提高它守边界的概率，Hook 会把边界写成系统规则。",
     ],
     visual: (
       <div className="hook-layout">
@@ -1529,48 +1302,104 @@ const slides: SlideDefinition[] = [
   {
     id: "tests",
     section: "实践 / 文档",
-    title: "让正确上下文更容易被找到",
-    conclusion: "小而清晰的文档集群，比每次重新阅读几千行代码更省上下文。",
-    frameCount: 5,
+    title: "先找到权威文档，再读取实现",
+    conclusion: "最近的 README 管模块，Architecture 管跨模块关系；Fingerprint 只提醒你重新检查。",
+    frameCount: 6,
     notes: [
-      "我开始在每个重要子模块维护一个简单 README。",
-      "长期有效的 API 和领域说明放在 docs。",
-      "一次性的分析和修改计划放在 docs/local。",
-      "模块文档回答职责、非职责、入口、不变量和关系。",
-      "过期文档会提高走错路径的概率，因此必须同步维护。",
+      "我的工程文档按“事实该归谁管”组织，入口是 docs/README.md。",
+      "模块职责、接口和不变量归最近祖先 README；没有独立边界的目录，不额外配文档。",
+      "跨模块流程和 Authority 归 Architecture，精确命令与数据形状归 API，长期决策的原因写进 ADR。",
+      "同一个事实只认一个权威来源；docs/local 和 archive 不进入正式事实链。",
+      "文档新鲜度分两层：模块 README 自动认领最近目录，Architecture 用 doc-watch 明写依赖。",
+      "pre-commit 只看 staged 内容。指纹过期就拦住提交，让 Agent 重读正文并刷新；CI 再用 clean checkout 兜底。",
     ],
     visual: (
-      <div className="docs-layout">
-        <div className="file-tree">
-          <span>src/</span>
-          {Array.from({ length: 14 }, (_, index) => (
-            <i key={index} style={{ width: `${46 + ((index * 19) % 48)}%` }} />
-          ))}
+      <div className="docs-map-layout">
+        <div className="docs-entry">
+          <span>DOCUMENT ENTRY</span>
+          <strong>docs/README.md</strong>
+          <small>文档索引 · 阅读路径 · 事实归属</small>
         </div>
-        <Reveal step={1} className="readme-strip">
-          <code>src/core/README.md</code>
-          <code>src/agent/README.md</code>
-          <code>src/presentation/README.md</code>
+        <div className="docs-authority-map">
+          <Reveal step={1} className="docs-authority-row docs-authority-row--active">
+            <span>01 / MODULE CONTRACT</span>
+            <code>nearest README.md</code>
+            <strong>职责 · 接口 · 不变量</strong>
+            <small>自动拥有最近目录下的 tracked files</small>
+          </Reveal>
+          <Reveal step={2} className="docs-authority-row">
+            <span>02 / ARCHITECTURE</span>
+            <code>docs/architecture/*.md</code>
+            <strong>跨模块流程 · Authority</strong>
+            <small>doc-watch 显式声明依赖</small>
+          </Reveal>
+          <Reveal step={3} className="docs-authority-row">
+            <span>03 / REFERENCE</span>
+            <code>docs/api/</code>
+            <strong>命令 · 事件 · 数据形状</strong>
+            <small>精确接口只在这里维护</small>
+          </Reveal>
+          <Reveal step={3} className="docs-authority-row">
+            <span>04 / DECISION</span>
+            <code>docs/decisions/</code>
+            <strong>为什么这样选</strong>
+            <small>记录替代方案与长期后果</small>
+          </Reveal>
+        </div>
+        <Reveal step={4} className="docs-source-rule" motion="grow-x">
+          <b>ONE FACT → ONE AUTHORITATIVE HOME</b>
+          <span>docs/local / archive 不进入正式 freshness check</span>
         </Reveal>
-        <Reveal step={2} className="module-map">
-          {["CORE", "AGENT", "PRESENTATION"].map((item, index) => (
-            <Node
-              key={item}
-              index={`0${index + 1}`}
-              title={item}
-              detail="清晰边界"
-              tone={index === 1 ? "active" : "default"}
-            />
-          ))}
-        </Reveal>
-        <Reveal step={3} className="doc-questions">
-          {["负责什么", "不负责什么", "核心入口", "关键不变量", "模块关系"].map(
-            (item, index) => <span key={item}>0{index + 1} / {item}</span>,
-          )}
-        </Reveal>
-        <Reveal step={4} className="doc-policy">
-          <div><span>长期有效</span><b>docs / API 与领域说明</b></div>
-          <div><span>单次任务</span><b>docs/local / 分析与计划</b></div>
+        <Reveal step={5} className="doc-freshness-gate" motion="fade">
+          <div className="doc-freshness-intro">
+            <div>
+              <span>DOCUMENT FRESHNESS / TWO LAYERS</span>
+              <strong>两类文档，各管一层</strong>
+            </div>
+            <p>
+              Fingerprint 不会替你写文档；它只要求 <b>代码变了，文档必须重新确认</b>。
+            </p>
+          </div>
+          <div className="doc-freshness-lanes">
+            <div>
+              <span>MODULE README</span>
+              <strong>最近祖先 README 自动拥有目录</strong>
+              <code>tracked module files</code>
+              <small>module-fingerprint</small>
+            </div>
+            <div>
+              <span>ARCHITECTURE</span>
+              <strong>doc-watch 显式列出来源</strong>
+              <code>docs/architecture/*.md</code>
+              <small>architecture-fingerprint</small>
+            </div>
+          </div>
+          <div className="doc-freshness-flow">
+            <div>
+              <span>01 / INDEX</span>
+              <strong>只读 staged 内容</strong>
+              <small>工作区无关变化不进入 hash</small>
+            </div>
+            <div>
+              <span>02 / RECOMPUTE</span>
+              <strong>重算 SHA-256</strong>
+              <small>Module 按 affected · Architecture 全量</small>
+            </div>
+            <div className="is-blocked">
+              <span>03 / STALE</span>
+              <strong>阻止提交</strong>
+              <small>缺失、格式错误或过期都失败</small>
+            </div>
+            <div className="is-passed">
+              <span>04 / REVIEW</span>
+              <strong>更新正文 + 刷新</strong>
+              <small>Agent Review 后 pre-commit 才放行</small>
+            </div>
+          </div>
+          <div className="doc-freshness-boundary">
+            <b>Fingerprint 只证明重新 Review 过，不证明正文一定正确。</b>
+            <span>pre-commit 拦截 · CI clean checkout 再兜底</span>
+          </div>
         </Reveal>
       </div>
     ),
@@ -1578,22 +1407,22 @@ const slides: SlideDefinition[] = [
   {
     id: "work-shift",
     section: "经验 07 / AGENTS.md",
-    title: "把吃过的亏，整理成自己的 AGENTS.md",
+    title: "把吃过的亏写进 AGENTS.md",
     conclusion: "模型和 Skill 会换，简单、边界、根因与验证不会过期。",
     frameCount: 5,
     notes: [
-      "反复出现的问题，不应该永远散落在聊天记录里。",
-      "我会人工总结，也会让 Agent 回顾本地会话记录。",
-      "这些约束逐渐沉淀成九条 AGENTS.md 原则。",
-      "它不是一次写完的；哪次吃了亏，就补一条。",
-      "同一个问题连续出现，就把规则写得更明确。",
+      "反复出现的问题如果一直散在聊天记录里，下一次还得从头再教。",
+      "我会自己记，也会让 Agent 回看本地会话，找出它经常在哪儿出错。",
+      "值得长期留下的约束，就写进 AGENTS.md。目前我的版本有九条。",
+      "这份文件不是一次写完的。哪里吃了亏，我就补一条。",
+      "同一个问题反复出现，就把规则再写明确一点。",
     ],
     visual: (
       <div className="agents-layout">
         <div className="agents-file">
           <span>PROJECT ROOT</span>
           <strong>AGENTS.md</strong>
-          <small>一份持续演进的个人工程约束</small>
+          <small>一份会跟着项目一起更新的工程约束</small>
         </div>
         <div className="agents-principles">
           {[
@@ -1614,7 +1443,7 @@ const slides: SlideDefinition[] = [
           ))}
         </div>
         <Reveal step={4} className="agents-evolution" motion="grow-x">
-          <span>一次失误</span><i>→</i><span>一条规则</span><i>→</i><strong>长期资产</strong>
+          <span>一次失误</span><i>→</i><span>一条规则</span><i>→</i><strong>以后自动生效</strong>
         </Reveal>
       </div>
     ),
@@ -1623,15 +1452,15 @@ const slides: SlideDefinition[] = [
     id: "taste",
     section: "实践 / 当前工作流",
     title: "我现在怎么 Vibe Coding",
-    conclusion: "执行可以交给 Agent，Comment 的价值和最终 Merge 仍由人判断。",
+    conclusion: "Agent 可以执行；Comment 值不值得改、最后要不要 Merge，仍由人决定。",
     frameCount: 6,
     notes: [
-      "细节不清楚时，先用 Grill Me 反向提问，再维护设计文档。",
-      "设计定下来以后，再实现代码并运行测试。",
+      "细节连我自己都没想清楚时，我不会马上叫 Agent 开写。先用 Grill Me，让它追着问。",
+      "问题问得差不多了，再把需求和边界写进设计文档，然后开始实现和测试。",
       "测试通过后提交 PR，等待 CI 和自动触发的 Codex Code Review。",
-      "Review Comment 不照单全收，而是判断是否真正有价值。",
-      "有价值就继续修；泛泛而谈或增加复杂度的建议可以拒绝。",
-      "最后是继续修改还是 Merge，决定仍然在我这里。",
+      "Review Comment 我会自己判断，说得有道理就继续修。",
+      "只是泛泛而谈，或者会把事情搞复杂，就忽略，必要时解释原因。",
+      "继续修改还是 Merge，最后由我决定。",
     ],
     visual: (
       <div className="workflow-layout">
@@ -1656,7 +1485,7 @@ const slides: SlideDefinition[] = [
           ))}
         </div>
         <Reveal step={5} className="workflow-decision" motion="fade">
-          <span>最终关卡</span>
+          <span>最后由人判断</span>
           <strong>Comment 有价值吗？</strong>
           <div><b>是 → 继续修复</b><b>否 → 忽略或说明原因</b></div>
         </Reveal>
@@ -1667,9 +1496,15 @@ const slides: SlideDefinition[] = [
     id: "demo",
     section: "演示 / 章节页",
     title: "Talk is cheap. Show me the code.",
-    conclusion: "方法先讲到这里。下面别听我怎么说，直接看东西。",
-    frameCount: 1,
-    notes: ["这是一段用浏览器前端完成的 AI 产品演示；停顿后按右方向键进入。"],
+    conclusion: "方法讲完，下面直接看成品。",
+    frameCount: 5,
+    notes: [
+      "方法先讲到这里。下面别听我说，直接看东西。",
+      "接下来这个演示，3A 是我自己封的。",
+      "代码是 AI 写的。",
+      "图片是 AI 画的。",
+      "音频也是 AI 做的。预算没有 3A，AI 倒是有三个。停顿一下，再进入演示。",
+    ],
     visual: (
       <div className="demo-title-layout">
         <div className="demo-title-rule">
@@ -1687,6 +1522,33 @@ const slides: SlideDefinition[] = [
           <span>下一页</span>
           <b>产品动画 / 60 秒</b>
         </div>
+        <Reveal step={1} className="demo-ai-curtain" motion="fade">
+          <div className="demo-ai-intro">
+            <span>接下来 / 60 秒</span>
+            <strong>这个演示，<em>3A</em> 是我自己封的。</strong>
+          </div>
+          <div className="demo-ai-credits">
+            <Reveal step={2} className="demo-ai-credit">
+              <span>01 / CODE</span>
+              <strong>代码</strong>
+              <b><em>AI</em> 写的</b>
+            </Reveal>
+            <Reveal step={3} className="demo-ai-credit">
+              <span>02 / IMAGE</span>
+              <strong>图片</strong>
+              <b><em>AI</em> 画的</b>
+            </Reveal>
+            <Reveal step={4} className="demo-ai-credit">
+              <span>03 / AUDIO</span>
+              <strong>音频</strong>
+              <b><em>AI</em> 做的</b>
+            </Reveal>
+          </div>
+          <Reveal step={4} className="demo-ai-punchline" motion="grow-x">
+            <span>预算没有 3A</span>
+            <strong>AI 倒是有三个。</strong>
+          </Reveal>
+        </Reveal>
       </div>
     ),
   },
@@ -1694,10 +1556,10 @@ const slides: SlideDefinition[] = [
     id: OPENING_DEMO_SLIDE_ID,
     section: "演示 / 产品动画",
     title: "产品动画演示",
-    conclusion: "观众视图：按任意键或点击开始动画。",
+    conclusion: "按任意键或点击，即可开始动画。",
     frameCount: 1,
     notes: [
-      "观众视图保持黑屏并等待启动；按任意键或点击开始，Shift + End 可跳到结尾。",
+      "观众视图保持黑屏并等待启动；按任意键或点击开始，Shift + → 或 Shift + End 可直接跳到下一页。",
     ],
     visual: (
       <div className="opening-demo-cue">
@@ -1710,21 +1572,21 @@ const slides: SlideDefinition[] = [
   {
     id: "generations",
     section: "实践 / Taste",
-    title: "我们不需要在打字速度上赢过 AI",
-    conclusion: "Taste 是知道应该拒绝什么，以及应该删除什么。",
+    title: "能生成、能运行，还不等于值得留下",
+    conclusion: "AI 可以多给方案，Taste 决定哪一个能进系统。",
     frameCount: 6,
     notes: [
-      "在具体编码任务上，我已经赶不上 AI 的实现速度。",
-      "但速度不是软件工程的全部，设计、分层和整体一致性都需要判断。",
-      "两个实现都能运行、都能通过测试，代价却可能完全不同。",
-      "Taste 包括判断边界、识别复杂度和选择更简单的方案。",
-      "它不只是告诉 AI 生成什么，也要知道什么不该存在。",
-      "认真读 Diff、追问为什么和拒绝过度设计，都在训练 Taste。",
+      "刚才的 Demo 里，代码、画面和声音都由 AI 生成。生成这件事越来越便宜了。",
+      "画面里的两个实现都能跑，也都能通过测试，工程代价却完全不同。",
+      "左边为了想象中的未来提前加了抽象。",
+      "后来兼容层和旧入口越堆越多，每个局部都有道理，合起来却成了负担。",
+      "右边复用现有领域服务，只留一个入口。结果一样，却更适合这个系统。",
+      "Taste 也包括会拒绝、会删除，知道什么不该进入系统。",
     ],
     visual: (
       <div className="taste-layout">
         <div className="implementation implementation--works">
-          <span>能运行</span>
+          <span>局部正确</span>
           <b>测试通过</b>
           <div className="code-tree">
             <i>Feature</i>
@@ -1736,7 +1598,7 @@ const slides: SlideDefinition[] = [
           </div>
         </div>
         <div className="implementation implementation--fits">
-          <span>适合这个系统</span>
+          <span>整体适合</span>
           <b>测试通过</b>
           <div className="code-tree">
             <i>Feature</i>
@@ -1746,10 +1608,10 @@ const slides: SlideDefinition[] = [
             </Reveal>
           </div>
         </div>
-        <Reveal step={1} className="same-output">相同结果 / 不同代价</Reveal>
+        <Reveal step={1} className="same-output">同样通过测试 / 工程代价不同</Reveal>
         <Reveal step={5} className="taste-quote" motion="fade">
           <strong>TASTE IS WHAT YOU<br />REFUSE AND REMOVE.</strong>
-          <span>Taste 是知道什么不应该存在。</span>
+          <span>Taste 也包括会拒绝、会删除。</span>
         </Reveal>
       </div>
     ),
@@ -1758,24 +1620,27 @@ const slides: SlideDefinition[] = [
     id: "lessons",
     section: "总结 / 三条经验",
     title: "我的三条核心经验",
-    conclusion: "执行能力会继续变强，需求、约束和判断仍然需要持续积累。",
+    conclusion: "工具会换；需求、规则和判断会一直积累。",
     frameCount: 4,
     notes: [
-      "第一，先讲清需求和设计，再管控 Agent 的执行行为。",
-      "第二，持续演进的 AGENTS.md 是重要的个人资产。",
-      "第三，多与 AI 沟通并阅读优秀设计，持续培养 Taste。",
-      "未来可以少写一些代码，但不能放弃判断什么值得做、什么不能接受。",
+      "最后，把前面的实践收成三条。",
+      "第一，先讲清什么才算正确，再用边界、测试和 Hook 管住执行。",
+      "第二，把反复踩过的坑写进 AGENTS.md，让一次教训在下次自动生效。",
+      "第三，多看 Diff、多读优秀设计、多做取舍，慢慢练出自己的 Taste。",
     ],
     visual: (
       <div className="lessons-layout">
         {[
-          "先把需求和设计讲清楚，再管控 Agent 的执行行为。",
-          "把反复出现的经验，沉淀成持续演进的 AGENTS.md。",
-          "多沟通、多阅读、多拒绝过度设计，持续培养 Taste。",
+          { label: "需求与边界", text: "先讲清什么算正确，再放大执行" },
+          { label: "以后自动生效", text: "把踩过的坑写进 AGENTS.md" },
+          { label: "工程判断", text: "多看 Diff，多做取舍，慢慢练 Taste" },
         ].map((item, index) => (
-          <Reveal step={index + 1} key={item} className="lesson-row">
+          <Reveal step={index + 1} key={item.label} className="lesson-row">
             <span>0{index + 1}</span>
-            <b>{item}</b>
+            <div>
+              <em>{item.label}</em>
+              <b>{item.text}</b>
+            </div>
           </Reveal>
         ))}
       </div>
@@ -1785,18 +1650,18 @@ const slides: SlideDefinition[] = [
     id: "closing",
     section: "总结 / 重新汇合",
     title: "把执行交给 AI，把工程判断留在人手里",
-    conclusion: "我们不需要在打字速度上赢过 AI。",
+    conclusion: "执行越便宜，判断越重要。",
     frameCount: 4,
     notes: [
-      "第一部分的 Graph、Plugin 和第二部分的个人经历，最后汇合在同一点。",
-      "模型负责越来越多的不确定执行，系统和人负责目标、约束、证据与判断。",
-      "我们不需要在打字速度上赢过 AI。",
-      "把大量执行交给 AI，同时更认真地承担需求、边界、验证和 Taste。",
+      "前面讲的 Graph、Plugin 和我的失控经历，最后汇到了同一个地方。",
+      "我们的工程对象已经包括代码，也包括能力怎样被组织、运行和约束。",
+      "AI 可以接手越来越多执行，但目标、约束、证据和完成标准不能也一起交出去。",
+      "执行越便宜，判断反而越贵。把执行交给 AI，把工程判断留在人手里。",
     ],
     visual: (
       <div className="closing-layout">
         <div className="closing-loop">
-          {["目标", "上下文", "执行", "验证", "判断"].map((item, index) => (
+          {["目标", "约束", "执行", "证据", "判断"].map((item, index) => (
             <div key={item} className={index === 2 ? "agent-owned" : ""}>
               <span>0{index + 1}</span>
               <b>{item}</b>
@@ -1807,16 +1672,16 @@ const slides: SlideDefinition[] = [
           AI / 执行
         </Reveal>
         <Reveal step={2} className="ownership-label ownership-label--human">
-          人 / 目标 · 边界 · 验证 · 判断
+          系统 + 人 / 目标 · 约束 · 证据 · 判断
         </Reveal>
         <Reveal step={3} className="final-statement" motion="fade">
           <strong>
-            HAND OFF EXECUTION.
+            DELEGATE EXECUTION.
             <br />
-            KEEP ENGINEERING JUDGEMENT.
+            KEEP THE RIGHT TO JUDGE.
           </strong>
-          <span>把执行交给 AI，把工程判断留在人手里。</span>
-          <em>THANK YOU</em>
+          <span>执行越便宜，判断越重要。</span>
+          <em>谢谢大家 / THANK YOU</em>
         </Reveal>
       </div>
     ),
@@ -2229,7 +2094,14 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
         return;
       }
 
-      if (event.key === "ArrowRight") {
+      if (
+        mode === "presenter" &&
+        isOpeningDemoSlide &&
+        isOpeningSkipShortcut(event)
+      ) {
+        event.preventDefault();
+        movePage(1);
+      } else if (event.key === "ArrowRight") {
         event.preventDefault();
         movePage(1);
       } else if (event.key === "ArrowLeft") {
@@ -2246,7 +2118,13 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [moveFrame, movePage, openingActive]);
+  }, [
+    isOpeningDemoSlide,
+    mode,
+    moveFrame,
+    movePage,
+    openingActive,
+  ]);
 
   const frameDots = useMemo(
     () =>
@@ -2396,7 +2274,7 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
             </button>
           </div>
           <a
-            href={`/#/page/${pageIndex}/frame/${currentFrame}`}
+            href={`${BASE_PATH}/#/page/${pageIndex}/frame/${currentFrame}`}
             target="_blank"
             rel="noreferrer"
           >

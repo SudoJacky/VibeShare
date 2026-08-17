@@ -31,49 +31,91 @@ test("server-renders the Vibe Coding presentation", async () => {
   const html = await response.text();
   assert.match(html, /<title>Vibe Coding — Field Notes<\/title>/i);
   assert.match(html, /从 Loop 到 Graph/);
-  assert.match(html, /从单个执行循环迁移到多执行单元协作/);
+  assert.match(html, /单个执行单元越能干，瓶颈越容易跑到它们之间/);
   assert.match(html, /失败 \/ 局部重试/);
   assert.match(html, /人工决策/);
-  assert.match(html, /工程对象正在不断向外扩展/);
+  assert.match(html, /工程范围在一层层往外扩/);
   assert.match(html, /Loop 负责收敛，Graph 负责协作/);
   assert.match(html, /GRAPH OF LOOPS/);
-  assert.match(html, /Graph 组织协作，Loop 负责收敛/);
-  assert.match(html, /一张执行图，要让四件事显式/);
-  assert.match(html, /节点负责完成任务/);
-  assert.match(html, /图负责让整个系统值得信任/);
+  assert.match(html, /Graph 管协作，Loop 管收敛/);
+  assert.match(html, /一张执行图，至少要答清四个问题/);
+  assert.match(html, /节点负责做任务/);
+  assert.match(html, /图负责管住整个系统/);
   assert.match(html, /Agent 节点：进程成功，不等于任务完成/);
   assert.match(html, /运行成功/);
   assert.match(html, /任务完成/);
-  assert.match(html, /系统和人负责硬约束/);
+  assert.match(html, /系统和人守住硬约束/);
   assert.match(html, /生成编排，不等于获得可靠性/);
-  assert.match(html, /同一套系统 \/ 两个层次/);
+  assert.match(html, /同一套系统 \/ 各管一层/);
   assert.match(html, /自动生成编排/);
   assert.match(html, /自动获得可靠性/);
-  assert.match(html, /满足需求就停，不要默认升级到 Graph/);
+  assert.match(html, /够用就停，不要默认上 Graph/);
   assert.match(html, /路径无法/);
   assert.match(html, /复杂度溢出/);
-  assert.match(html, /每次升级，都要有任务约束作为证据/);
-  assert.match(html, /Agent Plugins：统一的是包装/);
+  assert.match(html, /任务里真的有这条约束吗？/);
+  assert.match(html, /Agent Plugins：把包装统一起来/);
   assert.match(html, /N 份客户端适配/);
   assert.match(html, /1 个标准包/);
   assert.match(html, /规范统一的部分/);
   assert.match(html, /仍由客户端决定/);
-  assert.match(html, /不是前后两代，而是两个工程方向/);
+  assert.match(html, /它们处理两个不同问题/);
   assert.match(html, /第二部分 \/ 我的实践/);
-  assert.match(html, /最初：慢，但是还在控制下/);
+  assert.match(html, /先交代一下样本量/);
+  assert.match(html, /22\.9B/);
+  assert.match(html, /接近 230 亿/);
+  assert.match(html, /\/images\/token-usage\.webp/);
   assert.match(html, /说完需求，然后“开始实现吧”/);
   assert.match(html, /执行权交给 Agent/);
   assert.match(html, /中间状态不可见/);
   assert.match(html, /执行者 → 状态检查员/);
-  assert.match(html, /一个周末：两个 Goal，执行了 20 个小时/);
+  assert.match(html, /让 Agent Loop 一直跑到目标完成/);
+  assert.match(html, /或 brainstorming/);
+  assert.match(html, /按 Spec 实现/);
+  assert.match(html, /直到目标完成/);
+  assert.match(html, /边界 · 验证 · 停止条件/);
+  assert.match(html, /一个周末：两个 Goal，跑了约 20 小时/);
+  assert.match(html, /约 20H/);
+  assert.match(html, /近千/);
+  assert.match(html, /功能完成 ≠ 工程完成/);
+  assert.match(html, /Code%20frequency\.png/);
+  assert.match(html, /WRITE \/ FAST/);
+  assert.match(html, /CONTROL \/ LOST/);
+  assert.match(html, /历史路径/);
+  assert.match(html, /我用了整整一个星期，重构整个项目/);
+  assert.match(html, /主路径不清/);
+  assert.match(html, /执行能力上去以后，控制关系也要一起补上/);
+  assert.match(html, /测试 · Hook · 人工 Review/);
   assert.match(html, /开发者正在变成技术产品经理/);
+  assert.match(html, /描述产品目标/);
+  assert.match(html, /AI 先拆出：功能点 · 模块 · 分期 · 风险/);
+  assert.match(html, /哪些内容明确不做？/);
+  assert.match(html, /自然语言 \/ 隐含关系/);
+  assert.match(html, /依赖汇合/);
+  assert.match(html, /验证关卡/);
+  assert.match(html, /关系画出来以后/);
+  assert.match(html, /并行 · 依赖 · 循环 · 人工关卡，都能检查/);
   assert.match(html, /测试驱动比 Spec 驱动更重要/);
-  assert.match(html, /用 Hook 把边界变成硬约束/);
-  assert.match(html, /把吃过的亏，整理成自己的 AGENTS\.md/);
+  assert.match(html, /用 Hook 把边界写成规则/);
+  assert.match(html, /先找到权威文档，再读取实现/);
+  assert.match(html, /DOCUMENT FRESHNESS \/ TWO LAYERS/);
+  assert.match(html, /module-fingerprint/);
+  assert.match(html, /doc-watch/);
+  assert.match(html, /Fingerprint 只证明重新 Review 过/);
+  assert.match(html, /把吃过的亏写进 AGENTS\.md/);
   assert.match(html, /我现在怎么 Vibe Coding/);
   assert.match(html, /VIBE CODING \/ FIELD NOTES/);
   assert.match(html, /Talk is cheap\. Show me the code\./);
+  assert.match(html, /我自己封的/);
+  assert.match(html, /AI 倒是有三个/);
+  assert.match(html, /01 \/ CODE/);
+  assert.match(html, /03 \/ AUDIO/);
   assert.match(html, /产品动画演示/);
+  assert.match(html, /能生成、能运行，还不等于值得留下/);
+  assert.match(html, /同样通过测试 \/ 工程代价不同/);
+  assert.match(html, /先讲清什么算正确，再放大执行/);
+  assert.match(html, /把踩过的坑写进 AGENTS\.md/);
+  assert.match(html, /系统 \+ 人 \/ 目标 · 约束 · 证据 · 判断/);
+  assert.match(html, /执行越便宜，判断越重要/);
   assert.match(html, /00(?:(?:<!-- -->)|\s)*\/(?:(?:<!-- -->)|\s)*26/);
   assert.match(html, /aria-label="上一页"/);
   assert.match(html, /aria-label="下一页"/);
@@ -112,6 +154,44 @@ test("uses the first 60 seconds of Neon Horizon for the opening BGM", async () =
   assert.match(source, /Math\.min\(fadedVolume, duckedVolume\)/);
 });
 
+test("syncs the automation narration and holds the Plan statement", async () => {
+  const source = await readFile(
+    new URL(
+      "../app/opening/remotion/OpeningSequenceComposition.tsx",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+
+  assert.match(
+    source,
+    /const AUTOMATION_QUESTION_TYPING_START = 105;/,
+  );
+  assert.match(
+    source,
+    /between\(\s*frame,\s*AUTOMATION_QUESTION_TYPING_START,\s*AUTOMATION_QUESTION_TYPING_END,?\s*\)/s,
+  );
+  assert.match(
+    source,
+    /<Sequence\s+from=\{frameAt\(14\) \+ AUTOMATION_QUESTION_TYPING_START\}[^>]*>\s*<Audio src=\{audioSources\.whatIfAll\}/s,
+  );
+
+  assert.match(source, /const PLAN_ANYTHING_REVEAL_END = 132;/);
+  assert.match(source, /const PLAN_STATEMENT_HOLD_FRAMES = frameAt\(1\);/);
+  assert.match(
+    source,
+    /const PLAN_STATEMENT_FADE_START =\s*PLAN_ANYTHING_REVEAL_END \+ PLAN_STATEMENT_HOLD_FRAMES;/s,
+  );
+  assert.equal(
+    [
+      ...source.matchAll(
+        /1 - between\(frame, PLAN_STATEMENT_FADE_START, PLAN_STATEMENT_FADE_END\)/g,
+      ),
+    ].length,
+    2,
+  );
+});
+
 test("keeps presentation typography legible at a distance", async () => {
   const source = await readFile(
     new URL("../app/globals.css", import.meta.url),
@@ -123,7 +203,37 @@ test("keeps presentation typography legible at a distance", async () => {
 
   assert.ok(fontSizes.length > 0);
   assert.ok(
-    Math.min(...fontSizes) >= 13,
-    "presentation text should not render below 13px on the 1920×1080 canvas",
+    Math.min(...fontSizes) >= 16,
+    "presentation text should not render below 16px on the 1920×1080 canvas",
+  );
+
+  const openingSource = await readFile(
+    new URL("../app/opening/opening-sequence.module.css", import.meta.url),
+    "utf8",
+  );
+  const openingFontSizes = [
+    ...openingSource.matchAll(/font-size:\s*(\d+)px/g),
+  ].map(([, size]) => Number(size));
+
+  assert.ok(openingFontSizes.length > 0);
+  assert.ok(
+    Math.min(...openingFontSizes) >= 10,
+    "dense Remotion product mockups should not render text below 10px",
+  );
+});
+
+test("keeps Page 11 evidence and verdict in separate columns", async () => {
+  const source = await readFile(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(
+    source,
+    /\.incident-evidence\s*\{[^}]*grid-template-columns:\s*minmax\(0, 900px\) minmax\(0, 1fr\);/s,
+  );
+  assert.match(
+    source,
+    /\.incident-control-loss strong\s*\{[^}]*white-space:\s*nowrap;/s,
   );
 });

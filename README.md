@@ -20,5 +20,15 @@ npm run dev
 npm run build
 ```
 
+## GitHub Pages
+
+```bash
+npm run build:pages
+```
+
+静态网站会生成到 `dist/client`。合并到 `main` 后，
+`.github/workflows/pages.yml` 只会发布这个目录，不会发布仓库里的其他文件。
+其他托管环境可以通过 `NEXT_PUBLIC_SITE_URL` 设置分享元数据中的站点地址。
+
 正式演示前，请用真实的 Token 统计、失控任务数据、Diff、模块文档和
 Before / After 案例替换页面中的占位内容。

@@ -1,41 +1,29 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import "./globals.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ??
-    requestHeaders.get("host") ??
-    "localhost:3000";
-  const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") ? "http" : "https");
-  const origin = `${protocol}://${host}`;
-  const imageUrl = new URL("/og.png", origin).toString();
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000/";
 
-  return {
-    metadataBase: new URL(origin),
-    title: {
-      default: "Vibe Coding — Field Notes",
-      template: "%s · Vibe Coding",
-    },
-    description: "AI 写得越来越快，我怎样没有失去对代码库的控制。",
-    openGraph: {
-      type: "website",
-      url: origin,
-      title: "AI 写得越来越快，我怎样没有失去对代码库的控制",
-      description: "一场关于速度、控制与工程判断的 Vibe Coding 分享。",
-      images: [{ url: imageUrl, width: 1672, height: 941 }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "AI 写得越来越快，我怎样没有失去对代码库的控制",
-      description: "一场关于速度、控制与工程判断的 Vibe Coding 分享。",
-      images: [imageUrl],
-    },
-  };
-}
+export const dynamic = "force-static";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Vibe Coding — Field Notes",
+    template: "%s · Vibe Coding",
+  },
+  description: "AI 写得越来越快，我怎样没有失去对代码库的控制。",
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    title: "AI 写得越来越快，我怎样没有失去对代码库的控制",
+    description: "从接近 230 亿 Token 的使用经历，回看 Vibe Coding 里的失控、重构和工程判断。",
+  },
+  twitter: {
+    card: "summary",
+    title: "AI 写得越来越快，我怎样没有失去对代码库的控制",
+    description: "从接近 230 亿 Token 的使用经历，回看 Vibe Coding 里的失控、重构和工程判断。",
+  },
+};
 
 export default function RootLayout({
   children,

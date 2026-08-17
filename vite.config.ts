@@ -40,20 +40,28 @@ export default defineConfig(async () => {
   process.env.WRANGLER_LOG_PATH ??= ".wrangler/logs";
   process.env.MINIFLARE_REGISTRY_PATH ??= ".wrangler/registry";
 
-  // Wrangler snapshots its log path while the Cloudflare plugin is imported.
-  const { cloudflare } = await import("@cloudflare/vite-plugin");
+  const isGitHubPagesBuild = process.env.GITHUB_PAGES_BUILD === "true";
+  const pagesBasePath = process.env.PAGES_BASE_PATH ?? "";
+  const plugins = [vinext()];
 
-  return {
-    server: isCodexSeatbeltSandbox
-      ? { watch: { useFsEvents: false, usePolling: true } }
-      : undefined,
-    plugins: [
-      vinext(),
+  if (!isGitHubPagesBuild) {
+    // Wrangler snapshots its log path while the Cloudflare plugin is imported.
+    const { cloudflare } = await import("@cloudflare/vite-plugin");
+    plugins.push(
       sites(),
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         config: localBindingConfig,
       }),
-    ],
+    );
+  }
+
+  return {
+    base:
+      isGitHubPagesBuild && pagesBasePath ? `${pagesBasePath}/` : undefined,
+    server: isCodexSeatbeltSandbox
+      ? { watch: { useFsEvents: false, usePolling: true } }
+      : undefined,
+    plugins,
   };
 });
