@@ -22,6 +22,7 @@ type MotionKind = "rise" | "grow-x" | "grow-y" | "fade" | "wipe";
 const PRESENTATION_WIDTH = 1920;
 const PRESENTATION_HEIGHT = 1080;
 const OPENING_DEMO_SLIDE_ID = "opening-demo";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 type SlideDefinition = {
   id: string;
@@ -726,7 +727,9 @@ const slides: SlideDefinition[] = [
             className="practice-proof-snapshot"
             role="img"
             aria-label="过去 78 天累计使用 22.9B Token 的使用统计截图"
-            style={{ backgroundImage: "url('/images/token-usage.webp')" }}
+            style={{
+              backgroundImage: `url('${BASE_PATH}/images/token-usage.webp')`,
+            }}
           />
           <span>USAGE SNAPSHOT / 78 DAYS</span>
         </Reveal>
@@ -935,7 +938,9 @@ const slides: SlideDefinition[] = [
               className="incident-frequency__image"
               role="img"
               aria-label="代码增删频率在短时间内显著冲高的统计图"
-              style={{ backgroundImage: "url('/images/Code%20frequency.png')" }}
+              style={{
+                backgroundImage: `url('${BASE_PATH}/images/Code%20frequency.png')`,
+              }}
             />
           </Reveal>
           <div className="incident-story">
@@ -2269,7 +2274,7 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
             </button>
           </div>
           <a
-            href={`/#/page/${pageIndex}/frame/${currentFrame}`}
+            href={`${BASE_PATH}/#/page/${pageIndex}/frame/${currentFrame}`}
             target="_blank"
             rel="noreferrer"
           >
