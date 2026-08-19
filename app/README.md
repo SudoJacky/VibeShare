@@ -1,5 +1,5 @@
 # Presentation Application
-<!-- vibeshare-module-fingerprint: sha256:0d29c7c8e3455425d96b1673919e4441e208c0f3d43c82cd05e032d031187763 -->
+<!-- vibeshare-module-fingerprint: sha256:b2847826c25efcf3634c5ae4f11b1503679bfe156ffa66584974f0c1e14041d4 -->
 
 `app` 是 VibeShare 的 Next.js / Vinext App Router 应用层，负责观众视图、演讲者视图以及二者共享的演示运行时。
 
@@ -8,6 +8,7 @@
 - 在 `layout.tsx` 中定义全局元数据与静态渲染策略。
 - 由 `page.tsx` 和 `presenter/page.tsx` 提供观众、演讲者两个入口。
 - 在 `presentation.tsx` 中维护页面定义、逐帧揭示、键盘导航、计时与演讲者备注。
+- 观众视图进入网页后立即预取开幕资源；抵达开幕页时若资源尚未就绪，则保持黑屏等待演讲者决定。
 - 通过 `BroadcastChannel` 同步两个视图，并将当前位置写入 URL hash 和 `sessionStorage`。
 - 在 `presentation-location.ts` 中集中生成并静默替换演示位置 hash。
 
@@ -27,3 +28,4 @@
 - URL 同步使用 `history.replaceState`，不得触发额外的 `hashchange` 导航。
 - 两个窗口交换完整的页码和逐页帧数组，接收端必须按当前页面定义裁剪越界值。
 - 观众视图与演讲者视图复用同一份 `Presentation` 状态机和幻灯片定义。
+- 开幕资源未全部就绪时不得挂载播放器；只允许资源就绪后播放或由演讲者手动跳过。

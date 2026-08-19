@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
 async function render(pathname = "/") {
@@ -152,6 +152,56 @@ test("uses the first 60 seconds of Neon Horizon for the opening BGM", async () =
   assert.match(source, /mix\(0\.2, 0, between\(frame, frameAt\(52\), frameAt\(60\)\)\)/);
   assert.match(source, /\? 0\.07\s+: 0\.2/);
   assert.match(source, /Math\.min\(fadedVolume, duckedVolume\)/);
+});
+
+test("preloads opening assets and waits on black when they are not ready", async () => {
+  const [presentation, preloader, composition, opening] = await Promise.all([
+    readFile(new URL("../app/presentation.tsx", import.meta.url), "utf8"),
+    readFile(
+      new URL("../app/opening/opening-preload.ts", import.meta.url),
+      "utf8",
+    ),
+    readFile(
+      new URL(
+        "../app/opening/remotion/OpeningSequenceComposition.tsx",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+    readFile(
+      new URL("../app/opening/OpeningSequence.tsx", import.meta.url),
+      "utf8",
+    ),
+  ]);
+
+  assert.match(preloader, /OPENING_SEQUENCE_ASSET_SOURCES\.map/);
+  assert.match(preloader, /cache: "force-cache"/);
+  assert.match(preloader, /await response\.arrayBuffer\(\)/);
+  assert.match(presentation, /void preloadOpeningAssets\(\)\.then/);
+  assert.match(
+    presentation,
+    /mode === "audience" && \(isOpeningDemoSlide \|\| openingExiting\)/,
+  );
+  assert.match(presentation, /ready=\{openingReady\}/);
+  assert.doesNotMatch(presentation, /!isOpeningDemoSlide \|\| openingReady/);
+  assert.match(opening, /ready\?: boolean;/);
+  assert.match(opening, /\{ready \? \(\s*<Player/s);
+  assert.match(opening, /\{ready && !canPlay \? \(/);
+  assert.match(
+    composition,
+    /export const OPENING_SEQUENCE_ASSET_SOURCES = Array\.from\(\s*new Set\(/s,
+  );
+});
+
+test("keeps the opening BGM payload below one MiB", async () => {
+  const { size } = await stat(
+    new URL(
+      "../app/opening/assets/audio/Neon Horizon.mp3",
+      import.meta.url,
+    ),
+  );
+
+  assert.ok(size < 1024 * 1024, `opening BGM is ${size} bytes`);
 });
 
 test("syncs the automation narration and keeps the Plan statement visible", async () => {

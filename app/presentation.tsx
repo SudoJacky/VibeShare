@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 import { OpeningSequence } from "./opening/OpeningSequence";
+import { preloadOpeningAssets } from "./opening/opening-preload";
 import { isOpeningSkipShortcut } from "./opening/opening-shortcuts";
 import { syncPresentationHash } from "./presentation-location";
 
@@ -1913,6 +1914,7 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
   const [frames, setFrames] = useState(() => slides.map(() => 0));
   const [elapsed, setElapsed] = useState(0);
   const [openingExiting, setOpeningExiting] = useState(false);
+  const [openingReady, setOpeningReady] = useState(false);
   const [mediaUnlocked, setMediaUnlocked] = useState(mode === "presenter");
   const channelRef = useRef<BroadcastChannel | null>(null);
   const sourceIdRef = useRef("");
@@ -1923,6 +1925,18 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
   const isOpeningDemoSlide = currentSlide.id === OPENING_DEMO_SLIDE_ID;
   const openingActive =
     mode === "audience" && (isOpeningDemoSlide || openingExiting);
+
+  useEffect(() => {
+    if (mode !== "audience") return;
+
+    let mounted = true;
+    void preloadOpeningAssets().then((ready) => {
+      if (mounted) setOpeningReady(ready);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [mode]);
 
   useEffect(() => {
     if (mode !== "audience") return;
@@ -2295,6 +2309,7 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
         {deck}
         {openingActive ? (
           <OpeningSequence
+            ready={openingReady}
             mediaUnlocked={mediaUnlocked}
             onComplete={completeOpening}
             onExitStart={prepareOpeningExit}

@@ -71,6 +71,12 @@ const pageTiles = [
   { source: assetSource(page20), column: 3, row: 5 },
 ] as const;
 
+export const OPENING_PROTOTYPE_ASSET_SOURCES = [
+  ...pageTiles.map(({ source }) => source),
+  openingBgmAudio,
+  projectAudio,
+];
+
 const revealTimes = [
   1, 1.25, 1.625, 2.625, 2.875, 3.125, 3.375, 3.625, 3.875, 4.125,
   4.125, 4.25, 4.5, 4.625, 4.875, 5, 5.125, 5.375, 5.5, 5.625,

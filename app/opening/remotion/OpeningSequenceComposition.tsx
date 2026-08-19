@@ -45,7 +45,10 @@ import learnReferenceOrbitSketch from "../assets/learn-reference-orbit-sketch.we
 import learnStarfield from "../assets/learn-starfield.webp";
 import rocketLaunch from "../assets/rocket-launch.webp";
 import styles from "../opening-sequence.module.css";
-import { OpeningSequencePrototype } from "./OpeningSequencePrototype";
+import {
+  OPENING_PROTOTYPE_ASSET_SOURCES,
+  OpeningSequencePrototype,
+} from "./OpeningSequencePrototype";
 
 export const OPENING_SEQUENCE_FPS = 60;
 export const OPENING_SEQUENCE_DURATION = 60 * OPENING_SEQUENCE_FPS;
@@ -1108,6 +1111,18 @@ const audioSources = {
   idea: new URL("../assets/audio/idea.mp3", import.meta.url).href,
   execution: new URL("../assets/audio/execution.mp3", import.meta.url).href,
 } as const;
+
+export const OPENING_SEQUENCE_ASSET_SOURCES = Array.from(
+  new Set([
+    ...Object.values(audioSources),
+    ...OPENING_PROTOTYPE_ASSET_SOURCES,
+    ...automationThemes.map(({ source }) => source),
+    assetSource(rocketLaunch),
+    assetSource(learnStarfield),
+    ...lessonReferences.map(({ source }) => source),
+    ...buildVisuals.map(({ source }) => source),
+  ]),
+);
 
 const openingBgmVolume = (frame: number) => {
   const fadedVolume = frame < frameAt(52)
