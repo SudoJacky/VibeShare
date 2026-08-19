@@ -1,55 +1,17 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import hostingConfig from "./.openai/hosting.json";
-import { sites } from "./build/sites-vite-plugin";
-
-const { r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 
-const localBindingConfig = {
-  main: "./worker/index.ts",
-  compatibility_flags: ["nodejs_compat"],
-  r2_buckets: r2
-    ? [
-        {
-          binding: r2,
-          bucket_name: "site-creator-r2",
-        },
-      ]
-    : [],
-};
-
-export default defineConfig(async () => {
-  // Keep Wrangler and Miniflare state project-local. These are non-secret tool
-  // settings; application environment belongs in ignored `.env*` files.
-  process.env.WRANGLER_WRITE_LOGS ??= "false";
-  process.env.WRANGLER_LOG_PATH ??= ".wrangler/logs";
-  process.env.MINIFLARE_REGISTRY_PATH ??= ".wrangler/registry";
-
-  const isGitHubPagesBuild = process.env.GITHUB_PAGES_BUILD === "true";
+export default defineConfig(() => {
   const pagesBasePath = process.env.PAGES_BASE_PATH ?? "";
-  const plugins = [vinext()];
-
-  if (!isGitHubPagesBuild) {
-    // Wrangler snapshots its log path while the Cloudflare plugin is imported.
-    const { cloudflare } = await import("@cloudflare/vite-plugin");
-    plugins.push(
-      sites(),
-      cloudflare({
-        viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
-        config: localBindingConfig,
-      }),
-    );
-  }
 
   return {
-    base:
-      isGitHubPagesBuild && pagesBasePath ? `${pagesBasePath}/` : undefined,
+    base: pagesBasePath ? `${pagesBasePath}/` : undefined,
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
-    plugins,
+    plugins: [vinext()],
   };
 });
