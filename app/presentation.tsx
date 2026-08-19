@@ -282,8 +282,8 @@ const slides: SlideDefinition[] = [
               </defs>
               <path d="M280 64 C280 90 142 78 142 116" />
               <path d="M280 64 C280 90 418 78 418 116" />
-              <path d="M142 226 C142 262 235 248 244 278" />
-              <path d="M418 226 C418 262 325 248 316 278" />
+              <path d="M142 246 C142 270 235 252 244 278" />
+              <path d="M418 246 C418 270 325 252 316 278" />
               <path className="graph-loops-map__edge--danger" d="M350 300 H448" />
             </svg>
             <div className="graph-loops-map__plan">规划</div>
@@ -366,6 +366,10 @@ const slides: SlideDefinition[] = [
           <Reveal step={3} className="anatomy-controller">
             <span>04 / CONTROLLER</span>
             <strong>继续 · 重规划 · 转人工 · 安全终止</strong>
+          </Reveal>
+          <Reveal step={1} className="anatomy-edge-key" motion="fade">
+            <span>02 / EDGE</span>
+            <b>并行 · 汇合 · 条件</b>
           </Reveal>
           <div className="anatomy-node anatomy-node--source">
             <span>01 / NODE</span><b>规划</b>
@@ -2313,9 +2317,9 @@ export function Presentation({ mode }: { mode: PresentationMode }) {
               color: "#f5f7f7",
               background: "#090d0f",
               cursor: "pointer",
-              fontFamily: '"IBM Plex Mono", Consolas, monospace',
-              fontSize: 14,
-              fontWeight: 650,
+              fontFamily: "system-ui, -apple-system, sans-serif",
+              fontSize: 22,
+              fontWeight: 600,
               letterSpacing: "0.14em",
               placeContent: "center",
               textTransform: "uppercase",

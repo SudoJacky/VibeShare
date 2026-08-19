@@ -5,23 +5,24 @@
 @import "@fontsource/ibm-plex-sans/500.css";
 
 :root {
-  color-scheme: dark;
-  --bg: #0f1517;
-  --surface: #151c1b;
-  --surface-strong: #121918;
-  --inset: #0a0f10;
-  --text: #e8e7e0;
-  --body-text: #c8cac5;
-  --muted: #a8aaa6;
-  --line: #3b4140;
-  --accent: #c5ff3d;
-  --accent-hover: #d7ff77;
-  --accent-soft: rgba(197, 255, 61, 0.08);
-  --on-accent: #101611;
-  --danger: #ff917a;
-  --font-ui: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
-  --font-body: "IBM Plex Sans", "PingFang SC", "Microsoft YaHei", Arial,
-    sans-serif;
+  color-scheme: light;
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface-strong: #e8e8ed;
+  --inset: #ffffff;
+  --text: #1d1d1f;
+  --body-text: #333336;
+  --muted: #515154;
+  --line: #8e8e93;
+  --accent: #0066cc;
+  --accent-hover: #0071e3;
+  --accent-soft: rgba(0, 102, 204, 0.09);
+  --on-accent: #ffffff;
+  --danger: #b42318;
+  --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 * {
@@ -41,6 +42,8 @@ body {
 body {
   overflow: hidden;
   font-family: var(--font-body);
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
 }
 
 button,
@@ -80,48 +83,17 @@ button {
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  background:
-    linear-gradient(rgba(59, 65, 64, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 65, 64, 0.035) 1px, transparent 1px),
-    var(--bg);
-  background-size: 48px 48px;
+  background: var(--bg);
   isolation: isolate;
 }
 
 .deck-canvas::before {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  content: "";
-  pointer-events: none;
-  background: radial-gradient(
-    circle at 80% 30%,
-    rgba(31, 74, 57, 0.13),
-    transparent 34%
-  );
+  display: none;
 }
 
 .deck-canvas[data-slide-id="graph-cover"],
 .deck-canvas[data-slide-id="control"] {
-  background:
-    radial-gradient(
-      ellipse at 40% 48%,
-      rgba(20, 30, 33, 0.38),
-      transparent 48%
-    ),
-    radial-gradient(
-      ellipse at 84% 52%,
-      rgba(14, 24, 27, 0.3),
-      transparent 42%
-    ),
-    #080e12;
-}
-
-.deck-canvas[data-slide-id="graph-cover"] {
-  background:
-    radial-gradient(circle at 72% 46%, rgba(197, 255, 61, 0.08), transparent 30%),
-    radial-gradient(circle at 22% 72%, rgba(53, 91, 75, 0.18), transparent 34%),
-    #080e12;
+  background: var(--bg);
 }
 
 .deck-canvas[data-slide-id="graph-cover"]::before,
@@ -170,12 +142,12 @@ button {
 }
 
 .deck-header {
-  top: 44px;
+  top: 28px;
   height: 52px;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
   color: var(--muted);
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -204,6 +176,11 @@ button {
   pointer-events: none;
 }
 
+.presentation-slide p {
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
 .presentation-slide[data-active="true"] {
   z-index: 1;
   visibility: visible;
@@ -224,8 +201,8 @@ button {
   left: 44px;
   right: 44px;
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 32px;
+  grid-template-columns: 240px 1fr;
+  gap: 40px;
   align-items: end;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--line);
@@ -234,7 +211,7 @@ button {
 .slide-heading span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.11em;
 }
@@ -242,10 +219,11 @@ button {
 .slide-heading h2 {
   margin: 0;
   font-family: var(--font-ui);
-  font-size: 58px;
-  font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.035em;
+  font-size: 60px;
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
 .slide-visual {
@@ -285,23 +263,23 @@ button {
 
 .frame-rail span[data-current="true"] {
   background: var(--accent);
-  box-shadow: 0 0 10px rgba(197, 255, 61, 0.45);
 }
 
 .deck-footer {
-  bottom: 36px;
+  bottom: 20px;
   height: 46px;
   gap: 28px;
   border-top: 1px solid var(--line);
 }
 
 .deck-footer p {
-  width: 560px;
+  width: 680px;
   margin: 0;
   overflow: hidden;
   color: var(--muted);
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 22px;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -331,7 +309,7 @@ button {
   gap: 8px;
   align-items: center;
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.06em;
 }
 
@@ -342,8 +320,8 @@ button {
 
 .footer-controls button,
 .presenter-keyboard button {
-  min-width: 34px;
-  height: 32px;
+  min-width: 38px;
+  height: 36px;
   border: 1px solid var(--line);
   border-radius: 0;
   background: transparent;
@@ -380,7 +358,7 @@ button {
 .flow-node__index {
   grid-row: span 2;
   color: var(--accent);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .flow-node__title {
@@ -391,7 +369,7 @@ button {
 .flow-node__detail {
   color: var(--muted);
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .flow-node--active {
@@ -409,7 +387,6 @@ button {
   height: 8px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 10px rgba(197, 255, 61, 0.42);
 }
 
 /* Part 01 / Graph Engineering */
@@ -425,8 +402,8 @@ button {
   inset: 0;
   content: "";
   background:
-    linear-gradient(rgba(59, 65, 64, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 65, 64, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(29, 29, 31, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29, 29, 31, 0.05) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: linear-gradient(to right, transparent 4%, #000 42%, #000 96%);
 }
@@ -442,7 +419,7 @@ button {
 .graph-cover-copy > span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 21px;
+  font-size: 22px;
   letter-spacing: 0.12em;
 }
 
@@ -475,24 +452,12 @@ button {
   width: 790px;
   height: 730px;
   overflow: hidden;
-  border: 1px solid rgba(59, 65, 64, 0.72);
+  border: 1px solid var(--line);
   background:
-    linear-gradient(rgba(59, 65, 64, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 65, 64, 0.08) 1px, transparent 1px),
-    rgba(10, 15, 16, 0.38);
+    linear-gradient(rgba(29, 29, 31, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29, 29, 31, 0.07) 1px, transparent 1px),
+    var(--surface);
   background-size: 40px 40px;
-}
-
-.graph-cover-network::before {
-  position: absolute;
-  inset: 0;
-  content: "";
-  pointer-events: none;
-  background: radial-gradient(
-    circle at 68% 49%,
-    rgba(197, 255, 61, 0.055),
-    transparent 30%
-  );
 }
 
 .graph-cover-network__header {
@@ -511,13 +476,13 @@ button {
 
 .graph-cover-network__header span {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.1em;
 }
 
 .graph-cover-network__header b {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -545,7 +510,8 @@ button {
 .graph-cover-edge {
   fill: none;
   marker-end: url("#graph-cover-arrow");
-  stroke: rgba(168, 170, 166, 0.8);
+  stroke: var(--muted);
+  stroke-opacity: 0.8;
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
@@ -567,7 +533,7 @@ button {
 .graph-cover-edge-label {
   fill: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.06em;
 }
 
@@ -587,26 +553,26 @@ button {
   align-content: center;
   padding: 15px;
   border: 1px solid var(--line);
-  background: #0b1112;
+  background: var(--surface);
   font-family: var(--font-ui);
 }
 
 .graph-cover-node span {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.09em;
 }
 
 .graph-cover-node b {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
 .graph-cover-node--goal {
-  top: 324px;
+  top: 312px;
   left: 24px;
   width: 95px;
-  height: 72px;
+  height: 96px;
 }
 
 .graph-cover-node--plan {
@@ -637,7 +603,6 @@ button {
   width: 130px;
   height: 108px;
   border-color: var(--accent);
-  box-shadow: 0 0 70px rgba(197, 255, 61, 0.06);
 }
 
 .graph-cover-node--verify span,
@@ -648,10 +613,10 @@ button {
 }
 
 .graph-cover-node--done {
-  top: 174px;
+  top: 168px;
   left: 670px;
   width: 96px;
-  height: 84px;
+  height: 96px;
   border-color: var(--accent);
   background: var(--accent-soft);
 }
@@ -684,7 +649,7 @@ button {
 
 .graph-cover-thesis span {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .graph-cover-thesis strong {
@@ -731,7 +696,7 @@ button {
   top: 22px;
   left: 26px;
   color: var(--layer-color, var(--muted));
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .engineering-layer strong {
@@ -745,7 +710,7 @@ button {
   margin: 0;
   color: var(--body-text);
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1.5;
 }
 
@@ -763,7 +728,7 @@ button {
 
 .engineering-layer--loop {
   --layer-height: 430px;
-  --layer-color: #e8e7e0;
+  --layer-color: var(--text);
 }
 
 .engineering-layer--graph {
@@ -783,7 +748,7 @@ button {
   gap: 20px;
   align-items: center;
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .engineering-scale span {
@@ -820,15 +785,15 @@ button {
 }
 
 .graph-panel {
-  border-color: rgba(197, 255, 61, 0.58);
-  background: rgba(197, 255, 61, 0.035);
+  border-color: rgba(0, 102, 204, 0.58);
+  background: rgba(0, 102, 204, 0.035);
 }
 
 .loop-graph-kicker {
   margin-bottom: 16px;
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.09em;
 }
 
@@ -849,7 +814,7 @@ button {
 .loop-cycle {
   position: relative;
   height: 302px;
-  border: 1px solid rgba(59, 65, 64, 0.72);
+  border: 1px solid var(--line);
   background:
     linear-gradient(rgba(59, 65, 64, 0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 65, 64, 0.06) 1px, transparent 1px);
@@ -884,7 +849,7 @@ button {
   border: 1px solid var(--line);
   background: var(--surface);
   font-family: var(--font-ui);
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -912,7 +877,7 @@ button {
 .loop-panel > p {
   margin: 20px 0 0;
   color: var(--muted);
-  font-size: 20px;
+  font-size: 22px;
   text-align: center;
 }
 
@@ -926,7 +891,7 @@ button {
   margin-bottom: 6px;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
   text-align: center;
 }
@@ -940,7 +905,7 @@ button {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   text-align: center;
 }
 
@@ -963,7 +928,7 @@ button {
 .graph-loops-map {
   position: relative;
   height: 402px;
-  border: 1px solid rgba(59, 65, 64, 0.72);
+  border: 1px solid var(--line);
   background:
     linear-gradient(rgba(59, 65, 64, 0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 65, 64, 0.06) 1px, transparent 1px);
@@ -980,7 +945,8 @@ button {
 .graph-loops-map > svg > path {
   fill: none;
   marker-end: url("#graph-loop-arrow");
-  stroke: rgba(168, 170, 166, 0.82);
+  stroke: var(--muted);
+  stroke-opacity: 0.82;
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
@@ -1007,7 +973,7 @@ button {
   display: grid;
   place-content: center;
   border: 1px solid var(--line);
-  background: #0b1112;
+  background: var(--surface);
   font-family: var(--font-ui);
 }
 
@@ -1016,14 +982,14 @@ button {
   left: 50%;
   width: 110px;
   height: 60px;
-  font-size: 20px;
+  font-size: 22px;
   transform: translateX(-50%);
 }
 
 .worker-loop {
   top: 116px;
   width: 210px;
-  height: 128px;
+  height: 174px;
   padding: 16px;
   place-content: initial;
 }
@@ -1038,7 +1004,7 @@ button {
 
 .worker-loop span {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -1051,7 +1017,7 @@ button {
 
 .worker-loop small {
   color: var(--body-text);
-  font-size: 16px;
+  font-size: 22px;
   line-height: 1.45;
 }
 
@@ -1062,7 +1028,7 @@ button {
   height: 68px;
   border-color: var(--accent);
   color: var(--accent);
-  font-size: 19px;
+  font-size: 22px;
   transform: translateX(-50%);
 }
 
@@ -1073,7 +1039,7 @@ button {
   height: 68px;
   border-color: var(--danger);
   color: var(--danger);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .loop-graph-thesis {
@@ -1088,7 +1054,7 @@ button {
 
 .loop-graph-thesis span {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .loop-graph-thesis strong {
@@ -1118,6 +1084,20 @@ button {
   background-size: 34px 34px;
 }
 
+.graph-anatomy-map::before {
+  position: absolute;
+  top: 176px;
+  right: 18px;
+  bottom: 104px;
+  left: 18px;
+  z-index: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  content: "";
+  pointer-events: none;
+  background: rgba(0, 102, 204, 0.035);
+}
+
 .anatomy-map__header {
   position: absolute;
   top: 22px;
@@ -1134,13 +1114,13 @@ button {
 
 .anatomy-map__header span {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.1em;
 }
 
 .anatomy-map__header b {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -1168,7 +1148,8 @@ button {
 .anatomy-edge {
   fill: none;
   marker-end: url("#anatomy-arrow");
-  stroke: rgba(168, 170, 166, 0.84);
+  stroke: var(--muted);
+  stroke-opacity: 0.84;
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
@@ -1186,8 +1167,12 @@ button {
 .anatomy-edge-label,
 .anatomy-controller-label {
   fill: var(--muted);
+  paint-order: stroke fill;
+  stroke: var(--inset);
+  stroke-linejoin: round;
+  stroke-width: 8px;
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.05em;
 }
 
@@ -1202,7 +1187,7 @@ button {
 .anatomy-state-link,
 .anatomy-controller-link {
   fill: none;
-  stroke: rgba(197, 255, 61, 0.56);
+  stroke: rgba(0, 102, 204, 0.56);
   stroke-dasharray: 6 6;
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
@@ -1216,12 +1201,37 @@ button {
   fill: var(--accent);
 }
 
+.anatomy-edge-key {
+  position: absolute;
+  top: 162px;
+  left: 32px;
+  z-index: 2;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding-right: 12px;
+  background: var(--inset);
+  font-family: var(--font-ui);
+}
+
+.anatomy-edge-key span {
+  color: var(--accent);
+  font-size: 22px;
+  letter-spacing: 0.08em;
+}
+
+.anatomy-edge-key b {
+  color: var(--muted);
+  font-size: 22px;
+  font-weight: 400;
+}
+
 .anatomy-node {
   position: absolute;
   z-index: 2;
   display: grid;
   width: 150px;
-  height: 76px;
+  height: 96px;
   align-content: center;
   gap: 7px;
   padding: 14px;
@@ -1232,35 +1242,36 @@ button {
 
 .anatomy-node span {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 
 .anatomy-node b {
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 400;
 }
 
 .anatomy-node--source {
-  top: 276px;
+  top: 266px;
   left: 32px;
-  width: 125px;
+  width: 140px;
 }
 
 .anatomy-node--worker-a {
-  top: 196px;
+  top: 186px;
   left: 207px;
   border-color: var(--accent);
 }
 
 .anatomy-node--worker-b {
-  top: 366px;
+  top: 356px;
   left: 207px;
   border-color: var(--accent);
 }
 
 .anatomy-node--verify {
-  top: 276px;
+  top: 266px;
   left: 410px;
   width: 140px;
   border-color: var(--accent);
@@ -1272,7 +1283,7 @@ button {
 }
 
 .anatomy-node--result {
-  top: 196px;
+  top: 186px;
   left: 598px;
   width: 140px;
   border-color: var(--accent);
@@ -1285,7 +1296,7 @@ button {
 }
 
 .anatomy-node--human {
-  top: 366px;
+  top: 356px;
   left: 598px;
   width: 140px;
   border-color: var(--danger);
@@ -1308,19 +1319,19 @@ button {
   justify-content: space-between;
   padding: 0 22px;
   border: 1px solid var(--accent);
-  background: rgba(197, 255, 61, 0.055);
+  background: rgba(0, 102, 204, 0.055);
   font-family: var(--font-ui);
 }
 
 .anatomy-controller span,
 .anatomy-state span {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
 .anatomy-controller strong {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -1342,7 +1353,7 @@ button {
 
 .anatomy-state strong {
   color: var(--text);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -1364,7 +1375,7 @@ button {
 .anatomy-card > span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .anatomy-card strong {
@@ -1376,7 +1387,7 @@ button {
 .anatomy-card p {
   margin: 0;
   color: var(--muted);
-  font-size: 21px;
+  font-size: 22px;
   line-height: 1.55;
 }
 
@@ -1397,7 +1408,7 @@ button {
 
 .anatomy-conclusion span {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .anatomy-conclusion strong {
@@ -1439,13 +1450,13 @@ button {
 .agent-status span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
 .execution-column header em {
   color: var(--body-text);
-  font-size: 16px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -1464,7 +1475,7 @@ button {
   place-content: center;
   border: 1px solid var(--line);
   background: var(--surface);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -1486,7 +1497,7 @@ button {
 
 .execution-signal strong,
 .execution-verdict strong {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -1495,7 +1506,7 @@ button {
 }
 
 .execution-column--deterministic {
-  border-color: rgba(232, 231, 224, 0.46);
+  border-color: var(--line);
 }
 
 .execution-column--agent {
@@ -1537,7 +1548,7 @@ button {
 
 .agent-status em {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -1554,13 +1565,13 @@ button {
   align-items: center;
   padding: 0 26px;
   border: 1px solid var(--danger);
-  background: rgba(255, 145, 122, 0.045);
+  background: rgba(180, 35, 24, 0.045);
 }
 
 .semantic-gap > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -1569,7 +1580,7 @@ button {
   gap: 22px;
   align-items: center;
   font-family: var(--font-ui);
-  font-size: 21px;
+  font-size: 22px;
 }
 
 .semantic-gap b {
@@ -1585,7 +1596,7 @@ button {
 .semantic-gap p {
   margin: 0;
   color: var(--body-text);
-  font-size: 20px;
+  font-size: 22px;
   text-align: right;
 }
 
@@ -1612,12 +1623,12 @@ button {
 .control-boundary span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.06em;
 }
 
 .control-boundary b {
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -1643,18 +1654,18 @@ button {
 
 .dynamic-layer-heading span {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
 .dynamic-layer-heading strong {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
 .dynamic-layer-heading b {
   color: var(--body-text);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
   text-align: right;
 }
@@ -1683,7 +1694,7 @@ button {
 
 .dynamic-step span {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.07em;
 }
 
@@ -1695,7 +1706,7 @@ button {
 
 .dynamic-step em {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -1727,7 +1738,7 @@ button {
 .dynamic-workers > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.07em;
 }
 
@@ -1748,7 +1759,7 @@ button {
   padding-bottom: 8px;
   border-top: 1px solid var(--line);
   font-family: var(--font-ui);
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -1758,7 +1769,7 @@ button {
   padding-top: 8px;
   border-bottom: 1px solid var(--line);
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -1771,7 +1782,7 @@ button {
 
 .dynamic-layer-heading--governance {
   border: 0;
-  border-bottom: 1px solid rgba(197, 255, 61, 0.42);
+  border-bottom: 1px solid rgba(0, 102, 204, 0.42);
 }
 
 .dynamic-layer-heading--governance strong,
@@ -1788,10 +1799,10 @@ button {
   display: grid;
   place-content: center;
   padding: 12px;
-  border-right: 1px solid rgba(197, 255, 61, 0.38);
+  border-right: 1px solid rgba(0, 102, 204, 0.38);
   color: var(--body-text);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   text-align: center;
 }
 
@@ -1810,7 +1821,7 @@ button {
 
 .dynamic-thesis > span {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .dynamic-thesis > div {
@@ -1852,7 +1863,7 @@ button {
 .structure-card > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .structure-card strong {
@@ -1872,14 +1883,14 @@ button {
 .structure-fit b {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 400;
 }
 
 .structure-fit p {
   margin: 12px 0 0;
   color: var(--body-text);
-  font-size: 21px;
+  font-size: 22px;
   line-height: 1.55;
 }
 
@@ -1888,7 +1899,7 @@ button {
   margin-top: 22px;
   color: var(--body-text);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -1907,21 +1918,21 @@ button {
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .structure-card small b {
   color: var(--body-text);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
 .structure-card--loop {
-  border-color: rgba(232, 231, 224, 0.5);
+  border-color: var(--line);
 }
 
 .structure-card--graph {
-  border-color: rgba(197, 255, 61, 0.65);
+  border-color: rgba(0, 102, 204, 0.65);
 }
 
 .structure-card--graph > span,
@@ -1941,11 +1952,11 @@ button {
 
 .structure-escalation span {
   color: var(--danger);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .structure-escalation strong {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -1964,7 +1975,7 @@ button {
   width: calc(50% - 22px);
   height: 1px;
   margin: 0 8px 7px;
-  background: rgba(255, 109, 79, 0.58);
+  background: rgba(180, 35, 24, 0.58);
   content: "";
 }
 
@@ -1980,7 +1991,7 @@ button {
 .structure-rule > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .structure-rule > div {
@@ -1992,7 +2003,7 @@ button {
 .structure-rule b {
   color: var(--body-text);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -2025,7 +2036,7 @@ button {
 .plugin-clients > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -2068,12 +2079,12 @@ button {
   align-items: baseline;
   justify-content: space-between;
   padding: 17px 18px;
-  border: 1px solid rgba(232, 231, 224, 0.28);
+  border: 1px solid var(--line);
 }
 
 .plugin-source b {
   font-family: var(--font-ui);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -2081,7 +2092,7 @@ button {
 .plugin-targets em,
 .plugin-clients em {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -2103,7 +2114,7 @@ button {
 .plugin-targets b,
 .plugin-clients b {
   font-family: var(--font-ui);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -2122,7 +2133,7 @@ button {
 }
 
 .plugin-transfer span {
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -2139,13 +2150,13 @@ button {
 .plugin-transfer i::before {
   flex: 1;
   height: 1px;
-  background: rgba(197, 255, 61, 0.55);
+  background: rgba(0, 102, 204, 0.55);
   content: "";
 }
 
 .plugin-package {
-  border-color: rgba(197, 255, 61, 0.72);
-  background: rgba(197, 255, 61, 0.045);
+  border-color: rgba(0, 102, 204, 0.72);
+  background: rgba(0, 102, 204, 0.045);
 }
 
 .plugin-package > span,
@@ -2158,7 +2169,7 @@ button {
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding: 16px;
-  background: rgba(8, 14, 18, 0.72);
+  background: rgba(255, 255, 255, 0.88);
 }
 
 .plugin-tree span {
@@ -2166,15 +2177,15 @@ button {
   margin-bottom: 4px;
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
 .plugin-tree b {
   padding: 15px 10px;
-  border: 1px solid rgba(197, 255, 61, 0.32);
+  border: 1px solid rgba(0, 102, 204, 0.32);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   font-weight: 400;
   text-align: center;
 }
@@ -2191,12 +2202,12 @@ button {
 
 .plugin-extension span {
   color: var(--danger);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .plugin-extension em {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -2214,7 +2225,7 @@ button {
   grid-template-columns: 1fr 54px 1fr;
   align-items: center;
   padding: 0 24px;
-  border: 1px solid rgba(232, 231, 224, 0.22);
+  border: 1px solid var(--line);
   font-family: var(--font-ui);
 }
 
@@ -2227,7 +2238,7 @@ button {
 
 .plugin-boundary span {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .plugin-boundary div:last-child span {
@@ -2236,7 +2247,7 @@ button {
 
 .plugin-boundary b {
   color: var(--body-text);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -2260,7 +2271,7 @@ button {
 .plugin-bridge > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .plugin-bridge > div {
@@ -2273,7 +2284,7 @@ button {
   padding-left: 22px;
   border-left: 1px solid var(--line);
   color: var(--body-text);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -2321,7 +2332,7 @@ button {
 .practice-proof-copy > span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.12em;
 }
@@ -2360,7 +2371,7 @@ button {
 .practice-proof-scale small {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.09em;
 }
 
@@ -2386,7 +2397,7 @@ button {
 
 .practice-proof-stats span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .practice-proof-image {
@@ -2401,7 +2412,7 @@ button {
   display: block;
   width: 760px;
   aspect-ratio: 503 / 307;
-  border: 1px solid rgba(232, 231, 224, 0.18);
+  border: 1px solid var(--line);
   border-radius: 54px;
   background-repeat: no-repeat;
   background-size: contain;
@@ -2412,7 +2423,7 @@ button {
   margin-top: 22px;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.11em;
 }
 
@@ -2431,7 +2442,7 @@ button {
 .practice-proof-thesis span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 19px;
+  font-size: 22px;
   letter-spacing: 0.06em;
 }
 
@@ -2452,7 +2463,7 @@ button {
   gap: 22px;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.1em;
 }
 
@@ -2486,7 +2497,7 @@ button {
 .manual-checkin > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -2502,14 +2513,14 @@ button {
 .manual-checkin p {
   margin: 12px 0 0;
   color: var(--muted);
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .manual-trigger blockquote {
   margin: 42px 0 0;
   padding: 20px;
   border-left: 2px solid var(--accent);
-  background: rgba(197, 255, 61, 0.055);
+  background: rgba(0, 102, 204, 0.055);
   color: var(--accent);
   font-family: var(--font-ui);
   font-size: 25px;
@@ -2527,7 +2538,7 @@ button {
 }
 
 .manual-handoff span {
-  font-size: 16px;
+  font-size: 22px;
   line-height: 1.45;
 }
 
@@ -2544,15 +2555,15 @@ button {
 .manual-handoff i::before {
   flex: 1;
   height: 1px;
-  background: rgba(197, 255, 61, 0.58);
+  background: rgba(0, 102, 204, 0.58);
   content: "";
 }
 
 .manual-agent {
   grid-template-rows: auto 1fr auto;
   align-content: stretch;
-  border-color: rgba(197, 255, 61, 0.56);
-  background: rgba(8, 14, 18, 0.34);
+  border-color: rgba(0, 102, 204, 0.56);
+  background: rgba(255, 255, 255, 0.68);
 }
 
 .manual-agent header {
@@ -2606,18 +2617,18 @@ button {
 
 .manual-agent-step span {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .manual-agent-step b {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
 }
 
 .manual-agent-step em {
   overflow: hidden;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
   font-style: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2625,7 +2636,7 @@ button {
 
 .manual-agent-step--complete {
   border-color: var(--accent);
-  background: rgba(197, 255, 61, 0.07);
+  background: rgba(0, 102, 204, 0.07);
 }
 
 .manual-unknown {
@@ -2634,24 +2645,24 @@ button {
   justify-content: space-between;
   gap: 18px;
   padding-top: 18px;
-  border-top: 1px solid rgba(255, 109, 79, 0.48);
+  border-top: 1px solid rgba(180, 35, 24, 0.48);
   font-family: var(--font-ui);
 }
 
 .manual-unknown span {
   color: var(--danger);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .manual-unknown b {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   font-weight: 400;
   text-align: right;
 }
 
 .manual-checkin {
-  border-color: rgba(255, 109, 79, 0.56);
+  border-color: rgba(180, 35, 24, 0.56);
 }
 
 .manual-checkin > span,
@@ -2674,13 +2685,13 @@ button {
 }
 
 .manual-checkin div b {
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 400;
 }
 
 .manual-checkin div em {
   color: var(--danger);
-  font-size: 16px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -2698,7 +2709,7 @@ button {
 
 .manual-insight > span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .manual-gain,
@@ -2713,17 +2724,17 @@ button {
 
 .manual-insight em {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
   font-style: normal;
 }
 
 .manual-insight b {
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 400;
 }
 
 .manual-cost {
-  border-color: rgba(255, 109, 79, 0.48);
+  border-color: rgba(180, 35, 24, 0.48);
 }
 
 .manual-cost em,
@@ -2752,7 +2763,7 @@ button {
   border: 1px solid var(--line);
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .agent-pipeline {
@@ -2801,7 +2812,7 @@ button {
 .agent-loop-track b {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   font-weight: 400;
   letter-spacing: 0.08em;
 }
@@ -2811,7 +2822,7 @@ button {
 }
 
 .agent-loop-track b {
-  font-size: 19px;
+  font-size: 22px;
 }
 
 .agent-tradeoff {
@@ -2844,7 +2855,7 @@ button {
 
 .agent-tradeoff span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -2868,7 +2879,7 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 21, 23, 0.94);
+  background: rgba(245, 245, 247, 0.96);
   text-align: center;
 }
 
@@ -2877,7 +2888,7 @@ button {
   margin-bottom: 22px;
   color: var(--danger);
   font-family: var(--font-ui);
-  font-size: 19px;
+  font-size: 22px;
   letter-spacing: 0.12em;
 }
 
@@ -2906,7 +2917,7 @@ button {
 
 .demand-feed > span {
   color: var(--accent);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.1em;
 }
 
@@ -2914,7 +2925,7 @@ button {
   display: block;
   padding: 16px 0;
   border-bottom: 1px solid var(--line);
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -2933,7 +2944,7 @@ button {
   padding: 21px 24px;
   border: 1px solid var(--line);
   background: var(--surface-strong);
-  font-size: 19px;
+  font-size: 22px;
   letter-spacing: 0.07em;
 }
 
@@ -2946,7 +2957,7 @@ button {
 }
 
 .repo-layer--legacy {
-  border-color: rgba(255, 145, 122, 0.6);
+  border-color: rgba(180, 35, 24, 0.6);
   color: var(--danger);
 }
 
@@ -2962,9 +2973,9 @@ button {
 .repo-branches span {
   padding: 12px 16px;
   border-left: 2px solid var(--danger);
-  background: rgba(255, 145, 122, 0.08);
+  background: rgba(180, 35, 24, 0.08);
   color: var(--danger);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .trend-board {
@@ -2978,7 +2989,7 @@ button {
   display: block;
   margin-bottom: 16px;
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3034,13 +3045,13 @@ button {
   background: var(--inset);
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 21px;
+  font-size: 22px;
 }
 
 .incident-goals strong {
   color: var(--body-text);
   font-family: var(--font-ui);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 500;
 }
 
@@ -3093,7 +3104,7 @@ button {
 .incident-control-loss > span {
   display: block;
   color: var(--accent);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.1em;
 }
@@ -3136,7 +3147,7 @@ button {
 
 .incident-throughput span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3180,12 +3191,12 @@ button {
 .incident-debt-line > span {
   margin-right: auto;
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .incident-debt-line div {
   color: var(--danger);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 500;
 }
 
@@ -3211,7 +3222,7 @@ button {
 
 .rail > span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3228,7 +3239,7 @@ button {
   padding: 18px 14px;
   border: 1px solid var(--line);
   background: var(--bg);
-  font-size: 17px;
+  font-size: 22px;
   font-weight: 500;
   text-align: center;
 }
@@ -3265,7 +3276,7 @@ button {
 .rebuild-principle span {
   grid-row: 1 / 3;
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3278,7 +3289,7 @@ button {
 .rebuild-principle p {
   margin: 0;
   color: var(--body-text);
-  font-size: 20px;
+  font-size: 22px;
 }
 
 /* 06 / Skills */
@@ -3306,12 +3317,12 @@ button {
 }
 
 .skill-row span {
-  font-size: 21px;
+  font-size: 22px;
 }
 
 .skill-row b {
   color: var(--accent);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3345,17 +3356,17 @@ button {
   position: absolute;
   inset: -16px;
   content: "";
-  border: 1px solid rgba(197, 255, 61, 0.32);
+  border: 1px solid rgba(0, 102, 204, 0.32);
 }
 
 .task::after {
   inset: -32px;
-  border-color: rgba(197, 255, 61, 0.16);
+  border-color: rgba(0, 102, 204, 0.16);
 }
 
 .task span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3379,7 +3390,7 @@ button {
 
 .context-meter span {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .context-meter i {
@@ -3387,7 +3398,7 @@ button {
   border: 1px solid var(--line);
   background: linear-gradient(
     to top,
-    rgba(255, 145, 122, 0.45) 78%,
+    rgba(180, 35, 24, 0.45) 78%,
     transparent 78%
   );
 }
@@ -3417,12 +3428,12 @@ button {
 
 .durability-split span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .durability-split b {
   color: var(--accent);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 /* 07 / Context stack */
@@ -3453,7 +3464,7 @@ button {
 
 .context-layer span {
   color: var(--accent);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .context-layer b {
@@ -3463,7 +3474,7 @@ button {
 
 .context-layer em {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   font-style: normal;
   letter-spacing: 0.06em;
 }
@@ -3481,7 +3492,7 @@ button {
   justify-content: space-between;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
   writing-mode: vertical-rl;
 }
@@ -3529,7 +3540,7 @@ button {
 
 .docs-entry span {
   color: var(--accent);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -3542,7 +3553,7 @@ button {
 
 .docs-entry small {
   color: var(--body-text);
-  font-size: 18px;
+  font-size: 22px;
   line-height: 1.6;
 }
 
@@ -3566,7 +3577,7 @@ button {
   grid-row: 1 / span 2;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.06em;
 }
 
@@ -3574,7 +3585,7 @@ button {
   grid-row: 1 / span 2;
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .docs-authority-row strong {
@@ -3586,11 +3597,11 @@ button {
 .docs-authority-row small {
   align-self: start;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .docs-authority-row--active {
-  border-color: rgba(197, 255, 61, 0.52);
+  border-color: rgba(0, 102, 204, 0.52);
   background: var(--accent-soft);
 }
 
@@ -3607,13 +3618,13 @@ button {
 
 .docs-source-rule b {
   color: var(--accent);
-  font-size: 20px;
+  font-size: 22px;
   letter-spacing: 0.04em;
 }
 
 .docs-source-rule span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .doc-freshness-gate {
@@ -3625,7 +3636,7 @@ button {
   gap: 24px;
   padding: 42px 56px;
   border: 1px solid var(--accent);
-  background: rgba(15, 21, 23, 0.97);
+  background: rgba(245, 245, 247, 0.98);
 }
 
 .doc-freshness-intro {
@@ -3645,7 +3656,7 @@ button {
 .doc-freshness-intro span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -3660,14 +3671,14 @@ button {
 .doc-freshness-intro p {
   margin: 0;
   color: var(--body-text);
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1.55;
 }
 
 .doc-freshness-intro p b {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 19px;
+  font-size: 22px;
 }
 
 .doc-freshness-lanes {
@@ -3696,23 +3707,23 @@ button {
 .doc-freshness-lanes span {
   grid-row: 1 / span 2;
   color: var(--accent);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.06em;
 }
 
 .doc-freshness-lanes strong {
-  font-size: 21px;
+  font-size: 22px;
   font-weight: 500;
 }
 
 .doc-freshness-lanes code {
   color: var(--body-text);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .doc-freshness-lanes small {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .doc-freshness-flow {
@@ -3749,7 +3760,7 @@ button {
 
 .doc-freshness-flow span {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.05em;
 }
 
@@ -3762,7 +3773,7 @@ button {
 
 .doc-freshness-flow small {
   color: var(--body-text);
-  font-size: 16px;
+  font-size: 22px;
   line-height: 1.45;
 }
 
@@ -3795,13 +3806,13 @@ button {
 
 .doc-freshness-boundary b {
   color: var(--accent);
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .doc-freshness-boundary span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 /* 09 / Risk */
@@ -3821,7 +3832,7 @@ button {
   align-items: center;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .risk-axis i {
@@ -3860,7 +3871,7 @@ button {
 
 .risk-zone span {
   color: var(--accent);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3886,7 +3897,7 @@ button {
   position: absolute;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3942,12 +3953,12 @@ button {
 
 .merge-lock span {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .merge-lock strong {
   color: var(--accent);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 500;
 }
 
@@ -3983,7 +3994,7 @@ button {
 .passed-block small {
   grid-column: 2;
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -3993,7 +4004,7 @@ button {
   left: 42px;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .review-questions {
@@ -4012,7 +4023,7 @@ button {
 .review-questions span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .review-questions b {
@@ -4029,7 +4040,7 @@ button {
   border-top: 2px solid var(--accent);
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 20px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -4053,7 +4064,7 @@ button {
 
 .allocation > span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .allocation > div {
@@ -4088,7 +4099,7 @@ button {
 }
 
 .allocation b {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -4104,7 +4115,7 @@ button {
   border-right: 1px solid var(--line);
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   text-align: center;
 }
 
@@ -4142,14 +4153,14 @@ button {
 
 .implementation > span {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
 .implementation > b {
   float: right;
   color: var(--accent);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .implementation--fits {
@@ -4168,7 +4179,7 @@ button {
   padding: 18px 22px;
   border-left: 2px solid var(--line);
   background: var(--surface);
-  font-size: 21px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -4192,7 +4203,7 @@ button {
   background: var(--bg);
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   transform: translateX(-50%);
 }
 
@@ -4228,7 +4239,7 @@ button {
   align-items: center;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.12em;
 }
 
@@ -4241,7 +4252,7 @@ button {
 
 .demo-title-rule strong {
   color: var(--accent);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 500;
 }
 
@@ -4256,7 +4267,7 @@ button {
   position: absolute;
   top: -112px;
   left: -72px;
-  color: rgba(197, 255, 61, 0.18);
+  color: rgba(0, 102, 204, 0.18);
   font-size: 220px;
   line-height: 1;
 }
@@ -4276,7 +4287,7 @@ button {
   margin-top: 34px;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.14em;
 }
 
@@ -4297,12 +4308,12 @@ button {
 .opening-demo-cue span,
 .opening-demo-cue small {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.13em;
 }
 
 .demo-title-next b {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 500;
 }
 
@@ -4315,7 +4326,7 @@ button {
   gap: 38px;
   padding: 38px 52px;
   border: 1px solid var(--accent);
-  background: rgba(15, 21, 23, 0.985);
+  background: rgba(245, 245, 247, 0.99);
 }
 
 .demo-ai-intro {
@@ -4336,7 +4347,7 @@ button {
 
 .demo-ai-intro span {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -4375,7 +4386,7 @@ button {
 
 .demo-ai-credit span {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -4402,7 +4413,7 @@ button {
 
 .demo-ai-punchline span {
   color: var(--muted);
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .demo-ai-punchline strong {
@@ -4445,7 +4456,7 @@ button {
 
 .generation > span {
   color: var(--accent);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .generation > strong {
@@ -4466,12 +4477,12 @@ button {
 
 .generation b {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 22px;
 }
 
 .generation em {
   color: var(--text);
-  font-size: 17px;
+  font-size: 22px;
   font-style: normal;
 }
 
@@ -4506,7 +4517,7 @@ button {
 .lesson-row span {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 21px;
+  font-size: 22px;
 }
 
 .lesson-row > div {
@@ -4517,7 +4528,7 @@ button {
 .lesson-row em {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   font-style: normal;
   letter-spacing: 0.08em;
 }
@@ -4556,7 +4567,7 @@ button {
 .closing-loop span {
   margin-bottom: 12px;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .closing-loop b {
@@ -4574,7 +4585,7 @@ button {
   padding: 12px 18px;
   border: 1px solid var(--line);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -4608,7 +4619,7 @@ button {
   margin-top: 70px;
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 19px;
+  font-size: 22px;
   font-style: normal;
   letter-spacing: 0.14em;
 }
@@ -4632,7 +4643,7 @@ button {
   align-items: center;
   padding: 28px 30px;
   border: 1px solid var(--line);
-  background: rgba(10, 15, 16, 0.56);
+  background: rgba(255, 255, 255, 0.82);
   font-family: var(--font-ui);
   text-align: center;
 }
@@ -4646,7 +4657,7 @@ button {
 .role-panel > span {
   align-self: start;
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -4658,7 +4669,7 @@ button {
 
 .role-panel b {
   color: var(--body-text);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 400;
   line-height: 1.45;
 }
@@ -4672,11 +4683,11 @@ button {
 .role-panel > small {
   align-self: end;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .role-panel--now {
-  border-color: rgba(197, 255, 61, 0.48);
+  border-color: rgba(0, 102, 204, 0.48);
   background: var(--accent-soft);
 }
 
@@ -4694,7 +4705,7 @@ button {
   background: var(--bg);
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.08em;
   transform: translateX(-50%);
 }
@@ -4710,7 +4721,6 @@ button {
   padding: 25px 30px;
   border-left: 3px solid var(--accent);
   background: var(--surface-strong);
-  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.24);
   font-family: var(--font-ui);
 }
 
@@ -4718,7 +4728,7 @@ button {
   grid-row: 1 / 3;
   align-self: center;
   color: var(--accent);
-  font-size: 20px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -4736,7 +4746,7 @@ button {
   padding: 9px 12px;
   border: 1px solid var(--line);
   color: var(--body-text);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -4755,7 +4765,7 @@ button {
 
 .role-conclusion span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
 }
 
 .role-conclusion strong {
@@ -4778,7 +4788,7 @@ button {
 .phase-layout .risk-zone em {
   color: var(--muted);
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 22px;
   font-style: normal;
   line-height: 1.45;
 }
@@ -4799,10 +4809,10 @@ button {
   place-items: center;
   padding: 10px;
   border: 1px solid var(--line);
-  background: rgba(10, 15, 16, 0.48);
+  background: rgba(255, 255, 255, 0.78);
   color: var(--body-text);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   text-align: center;
 }
 
@@ -4823,14 +4833,14 @@ button {
   align-content: center;
   padding: 34px;
   border: 1px solid var(--line);
-  background: rgba(10, 15, 16, 0.48);
+  background: rgba(255, 255, 255, 0.78);
 }
 
 .diagram-source > span,
 .diagram-canvas::before {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -4849,10 +4859,10 @@ button {
 
 .diagram-source b {
   padding: 9px 13px;
-  border: 1px solid rgba(255, 145, 122, 0.46);
+  border: 1px solid rgba(180, 35, 24, 0.46);
   color: var(--danger);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -4865,7 +4875,7 @@ button {
 }
 
 .diagram-conversion span {
-  font-size: 17px;
+  font-size: 22px;
   line-height: 1.5;
   letter-spacing: 0.08em;
   text-align: center;
@@ -4883,7 +4893,7 @@ button {
   background:
     linear-gradient(rgba(59, 65, 64, 0.07) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 65, 64, 0.07) 1px, transparent 1px),
-    rgba(10, 15, 16, 0.52);
+    rgba(255, 255, 255, 0.82);
   background-size: 30px 30px;
 }
 
@@ -4892,7 +4902,7 @@ button {
   top: 20px;
   left: 22px;
   content: "可执行关系图";
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .diagram-node {
@@ -4905,17 +4915,17 @@ button {
   border: 1px solid var(--line);
   background: var(--surface-strong);
   font-family: var(--font-ui);
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .diagram-node b {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 500;
 }
 
 .diagram-node small {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .diagram-node--start { top: 86px; left: 40px; border-color: var(--accent); }
@@ -4934,7 +4944,7 @@ button {
   background: var(--inset);
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   letter-spacing: 0.06em;
 }
 
@@ -4975,7 +4985,7 @@ button {
   border: 1px dashed var(--danger);
   color: var(--danger);
   font-family: var(--font-ui);
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .diagram-benefit {
@@ -4993,7 +5003,7 @@ button {
 
 .diagram-benefit span {
   color: var(--muted);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.08em;
 }
 
@@ -5021,14 +5031,14 @@ button {
   align-content: start;
   padding: 40px;
   border: 1px solid var(--line);
-  background: rgba(10, 15, 16, 0.5);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .spec-panel > span,
 .tests-panel > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: 0.09em;
 }
 
@@ -5040,7 +5050,7 @@ button {
 }
 
 .tests-panel {
-  border-color: rgba(197, 255, 61, 0.5);
+  border-color: rgba(0, 102, 204, 0.5);
   background: var(--accent-soft);
 }
 
@@ -5073,10 +5083,10 @@ button {
 
 .spec-risks b {
   padding: 9px 12px;
-  border: 1px solid rgba(255, 145, 122, 0.42);
+  border: 1px solid rgba(180, 35, 24, 0.42);
   color: var(--danger);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -5100,7 +5110,7 @@ button {
 
 .spec-to-test {
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 22px;
   text-align: center;
   line-height: 48px;
 }
@@ -5119,7 +5129,7 @@ button {
   background: var(--surface-strong);
   color: var(--body-text);
   font-family: var(--font-ui);
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 400;
 }
 
@@ -5128,7 +5138,6 @@ button {
   height: 9px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 10px rgba(197, 255, 61, 0.35);
 }
 
 .test-verdict {
@@ -5144,7 +5153,7 @@ button {
   font-family: var(--font-ui);
 }
 
-.test-verdict span { color: var(--muted); font-size: 17px; }
+.test-verdict span { color: var(--muted); font-size: 22px; }
 .test-verdict strong { color: var(--accent); font-size: 31px; font-weight: 400; }
 
 .flow-layout {
@@ -5170,11 +5179,11 @@ button {
   align-content: center;
   padding: 28px;
   border: 1px solid var(--line);
-  background: rgba(10, 15, 16, 0.52);
+  background: rgba(255, 255, 255, 0.82);
   font-family: var(--font-ui);
 }
 
-.flow-cycle span { color: var(--muted); font-size: 16px; }
+.flow-cycle span { color: var(--muted); font-size: 22px; }
 .flow-cycle b { font-size: 27px; font-weight: 400; }
 .flow-cycle .flow-reward { border-color: var(--accent); background: var(--accent-soft); }
 .flow-cycle .flow-reward b { color: var(--accent); }
@@ -5198,7 +5207,7 @@ button {
   left: 0;
   color: var(--accent);
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 22px;
   text-align: center;
 }
 
@@ -5211,15 +5220,15 @@ button {
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   padding: 26px;
-  border: 1px solid rgba(255, 145, 122, 0.42);
+  border: 1px solid rgba(180, 35, 24, 0.42);
 }
 
 .flow-breakers span {
   padding: 14px;
-  background: rgba(255, 145, 122, 0.08);
+  background: rgba(180, 35, 24, 0.08);
   color: var(--danger);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 22px;
   text-align: center;
 }
 
@@ -5248,9 +5257,9 @@ button {
   font-family: var(--font-ui);
 }
 
-.flow-environment span { color: var(--muted); font-size: 17px; }
+.flow-environment span { color: var(--muted); font-size: 22px; }
 .flow-environment strong { color: var(--accent); font-size: 22px; font-weight: 400; }
-.flow-environment small { color: var(--danger); font-size: 16px; }
+.flow-environment small { color: var(--danger); font-size: 22px; }
 
 .hook-layout {
   position: relative;
@@ -5281,7 +5290,7 @@ button {
 }
 
 .hook-request span,
-.hook-request small { color: var(--muted); font-size: 16px; }
+.hook-request small { color: var(--muted); font-size: 22px; }
 .hook-request strong { color: var(--accent); font-size: 25px; font-weight: 400; }
 
 .hook-agent {
@@ -5294,7 +5303,7 @@ button {
   background: var(--surface-strong);
 }
 
-.hook-agent > span { color: var(--muted); font-size: 16px; }
+.hook-agent > span { color: var(--muted); font-size: 22px; }
 .hook-agent > div { display: flex; gap: 12px; }
 .hook-agent code { flex: 1; padding: 12px; border: 1px solid var(--line); color: var(--body-text); }
 
@@ -5313,8 +5322,8 @@ button {
   transform: translateX(-50%);
 }
 
-.hook-gate span { color: var(--accent); font-size: 16px; }
-.hook-gate strong { font-size: 20px; font-weight: 400; }
+.hook-gate span { color: var(--accent); font-size: 22px; }
+.hook-gate strong { font-size: 22px; font-weight: 400; }
 
 .hook-result {
   display: grid;
@@ -5325,9 +5334,9 @@ button {
   border: 1px solid var(--line);
 }
 
-.hook-result span { font-size: 16px; }
+.hook-result span { font-size: 22px; }
 .hook-result strong { font-size: 29px; font-weight: 400; }
-.hook-result small { color: var(--muted); font-size: 17px; }
+.hook-result small { color: var(--muted); font-size: 22px; }
 .hook-result--allow { border-color: var(--accent); }
 .hook-result--allow span, .hook-result--allow strong { color: var(--accent); }
 .hook-result--deny { border-color: var(--danger); }
@@ -5343,8 +5352,8 @@ button {
   border-top: 1px solid var(--line);
 }
 
-.hook-rule span { color: var(--muted); font-size: 17px; }
-.hook-rule b { font-size: 20px; font-weight: 400; }
+.hook-rule span { color: var(--muted); font-size: 22px; }
+.hook-rule b { font-size: 22px; font-weight: 400; }
 .hook-rule i { color: var(--accent); font-size: 27px; font-style: normal; text-align: center; }
 .hook-rule b:last-child { color: var(--accent); }
 
@@ -5367,9 +5376,9 @@ button {
   font-family: var(--font-ui);
 }
 
-.agents-file span { color: var(--muted); font-size: 16px; }
+.agents-file span { color: var(--muted); font-size: 22px; }
 .agents-file strong { color: var(--accent); font-size: 37px; font-weight: 400; }
-.agents-file small { color: var(--body-text); font-size: 18px; line-height: 1.5; }
+.agents-file small { color: var(--body-text); font-size: 22px; line-height: 1.5; }
 
 .agents-principles {
   display: grid;
@@ -5385,12 +5394,12 @@ button {
   align-items: center;
   padding: 18px;
   border: 1px solid var(--line);
-  background: rgba(10, 15, 16, 0.4);
+  background: rgba(255, 255, 255, 0.72);
   font-family: var(--font-ui);
 }
 
-.agents-principle span { color: var(--accent); font-size: 16px; }
-.agents-principle b { color: var(--body-text); font-size: 19px; font-weight: 400; line-height: 1.4; }
+.agents-principle span { color: var(--accent); font-size: 22px; }
+.agents-principle b { color: var(--body-text); font-size: 22px; font-weight: 400; line-height: 1.4; }
 
 .agents-evolution {
   position: absolute;
@@ -5406,9 +5415,9 @@ button {
   font-family: var(--font-ui);
 }
 
-.agents-evolution span { color: var(--muted); font-size: 17px; }
+.agents-evolution span { color: var(--muted); font-size: 22px; }
 .agents-evolution i { color: var(--accent); font-style: normal; }
-.agents-evolution strong { color: var(--accent); font-size: 21px; font-weight: 400; }
+.agents-evolution strong { color: var(--accent); font-size: 22px; font-weight: 400; }
 
 .workflow-layout {
   position: relative;
@@ -5430,7 +5439,7 @@ button {
   align-content: center;
   padding: 24px;
   border: 1px solid var(--line);
-  background: rgba(10, 15, 16, 0.45);
+  background: rgba(255, 255, 255, 0.76);
   font-family: var(--font-ui);
 }
 
@@ -5446,10 +5455,10 @@ button {
 
 .workflow-step:nth-child(4)::after { content: "↙"; top: auto; right: 50%; bottom: -23px; transform: translateX(50%); }
 .workflow-step:last-child::after { display: none; }
-.workflow-step span { color: var(--muted); font-size: 16px; }
+.workflow-step span { color: var(--muted); font-size: 22px; }
 .workflow-step strong { font-size: 23px; font-weight: 400; }
-.workflow-step small { color: var(--muted); font-size: 16px; letter-spacing: 0.08em; }
-.workflow-step--human { border-color: rgba(197, 255, 61, 0.44); background: var(--accent-soft); }
+.workflow-step small { color: var(--muted); font-size: 22px; letter-spacing: 0.08em; }
+.workflow-step--human { border-color: rgba(0, 102, 204, 0.44); background: var(--accent-soft); }
 .workflow-step--human span, .workflow-step--human small { color: var(--accent); }
 
 .workflow-decision {
@@ -5466,10 +5475,10 @@ button {
   font-family: var(--font-ui);
 }
 
-.workflow-decision > span { grid-row: 1 / 3; align-self: center; color: var(--accent); font-size: 16px; }
+.workflow-decision > span { grid-row: 1 / 3; align-self: center; color: var(--accent); font-size: 22px; }
 .workflow-decision > strong { font-size: 26px; font-weight: 400; }
 .workflow-decision > div { display: flex; gap: 12px; }
-.workflow-decision b { padding: 8px 10px; border: 1px solid var(--line); color: var(--body-text); font-size: 16px; font-weight: 400; }
+.workflow-decision b { padding: 8px 10px; border: 1px solid var(--line); color: var(--body-text); font-size: 22px; font-weight: 400; }
 
 /* Presenter */
 
@@ -5479,7 +5488,7 @@ button {
   height: 100vh;
   grid-template-columns: minmax(0, 1fr) 520px;
   overflow: hidden;
-  background: #090d0e;
+  background: #000000;
 }
 
 .presenter-preview {
@@ -5519,7 +5528,7 @@ button {
 .presenter-notes section > span {
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: 0.09em;
 }
 
@@ -5568,14 +5577,14 @@ button {
   height: 42px;
   background: transparent;
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
 }
 
 .presenter-notes > a {
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 18px;
   text-decoration: none;
 }
 

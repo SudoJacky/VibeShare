@@ -32,3 +32,18 @@ npm run build:pages
 
 正式演示前，请用真实的 Token 统计、失控任务数据、Diff、模块文档和
 Before / After 案例替换页面中的占位内容。
+
+## 模块文档
+
+`app/`、`worker/` 下的模块使用就近 `README.md` 记录职责、边界和不变量。
+每份模块 README 都带有其直接负责文件的指纹；代码变化后，检查会要求开发者重新阅读并按需更新文档。
+
+```bash
+npm run readme:check
+npm run readme:review -- app/opening
+npm run hooks:install
+```
+
+提交已有暂存改动时，优先运行
+`npm run readme:review -- --staged <module>`，再暂存更新后的 README。CI 和可选的
+pre-commit hook 都会拒绝未审阅或已过期的模块文档。

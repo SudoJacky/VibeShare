@@ -197,15 +197,33 @@ test("keeps presentation typography legible at a distance", async () => {
     new URL("../app/globals.css", import.meta.url),
     "utf8",
   );
-  const fontSizes = [...source.matchAll(/font-size:\s*(\d+)px/g)].map(
+
+  assert.match(source, /color-scheme:\s*light;/);
+  assert.match(source, /--bg:\s*#f5f5f7;/);
+  assert.match(source, /--text:\s*#1d1d1f;/);
+  assert.match(source, /--accent:\s*#0066cc;/);
+  assert.doesNotMatch(source, /--bg:\s*#000000;/);
+  assert.match(
+    source,
+    /\.graph-cover-network\s*\{[^}]*var\(--surface\);/s,
+  );
+  assert.doesNotMatch(source, /#c5ff3d|rgba\(197, 255, 61,/i);
+
+  const audienceStyles = source.split("/* Presenter */", 1)[0];
+  const fontSizes = [...audienceStyles.matchAll(/font-size:\s*(\d+)px/g)].map(
     ([, size]) => Number(size),
   );
 
   assert.ok(fontSizes.length > 0);
   assert.ok(
-    Math.min(...fontSizes) >= 16,
-    "presentation text should not render below 16px on the 1920×1080 canvas",
+    Math.min(...fontSizes) >= 22,
+    "projection-facing presentation text should not render below 22px on the 1920×1080 canvas",
   );
+  assert.match(source, /\.slide-heading h2\s*\{[^}]*font-size:\s*60px;/s);
+  assert.match(source, /\.presentation-slide p\s*\{[^}]*line-height:\s*1\.5;/s);
+  assert.match(source, /\.deck-footer p\s*\{[^}]*width:\s*680px;/s);
+  assert.match(source, /\.deck-header\s*\{[^}]*top:\s*28px;/s);
+  assert.match(source, /\.deck-footer\s*\{[^}]*bottom:\s*20px;/s);
 
   const openingSource = await readFile(
     new URL("../app/opening/opening-sequence.module.css", import.meta.url),
