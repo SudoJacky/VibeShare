@@ -154,7 +154,7 @@ test("uses the first 60 seconds of Neon Horizon for the opening BGM", async () =
   assert.match(source, /Math\.min\(fadedVolume, duckedVolume\)/);
 });
 
-test("syncs the automation narration and holds the Plan statement", async () => {
+test("syncs the automation narration and keeps the Plan statement visible", async () => {
   const source = await readFile(
     new URL(
       "../app/opening/remotion/OpeningSequenceComposition.tsx",
@@ -177,18 +177,31 @@ test("syncs the automation narration and holds the Plan statement", async () => 
   );
 
   assert.match(source, /const PLAN_ANYTHING_REVEAL_END = 132;/);
-  assert.match(source, /const PLAN_STATEMENT_HOLD_FRAMES = frameAt\(1\);/);
+  assert.doesNotMatch(source, /PLAN_STATEMENT_(?:HOLD|FADE)_/);
   assert.match(
     source,
-    /const PLAN_STATEMENT_FADE_START =\s*PLAN_ANYTHING_REVEAL_END \+ PLAN_STATEMENT_HOLD_FRAMES;/s,
+    /className=\{styles\.planLead\} style=\{\{ opacity: leadIn,/,
   );
-  assert.equal(
-    [
-      ...source.matchAll(
-        /1 - between\(frame, PLAN_STATEMENT_FADE_START, PLAN_STATEMENT_FADE_END\)/g,
-      ),
-    ].length,
-    2,
+  assert.match(
+    source,
+    /className=\{styles\.planAnything\} style=\{\{ opacity: anythingIn,/,
+  );
+});
+
+test("keeps the Orbit closing statement readable through the scene ending", async () => {
+  const source = await readFile(
+    new URL(
+      "../app/opening/remotion/OpeningSequenceComposition.tsx",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+
+  assert.match(source, /const ORBIT_CLOSING_REVEAL_START = 284;/);
+  assert.match(source, /const ORBIT_CLOSING_REVEAL_END = 306;/);
+  assert.match(
+    source,
+    /between\(\s*frame,\s*ORBIT_CLOSING_REVEAL_START,\s*ORBIT_CLOSING_REVEAL_END,/s,
   );
 });
 

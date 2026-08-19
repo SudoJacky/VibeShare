@@ -1,5 +1,5 @@
 # Opening Sequence
-<!-- vibeshare-module-fingerprint: sha256:c9deb3422be4b1b9f90fb86e047949d21c43c602f1ddc5df742b4e2ae17b0941 -->
+<!-- vibeshare-module-fingerprint: sha256:5086012faf3fb8f29b8b949676627e5f9c458ea24925d81623f235efdf31cfc1 -->
 
 `app/opening` 实现演示开始前的 60 秒 Remotion 开幕序列，并负责从需要用户手势解锁媒体的状态平滑交接到常规幻灯片。
 

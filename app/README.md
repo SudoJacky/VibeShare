@@ -1,5 +1,5 @@
 # Presentation Application
-<!-- vibeshare-module-fingerprint: sha256:6212771cc8db95970d950f61168ea00d7a08502b579a78d54251215a47f8ebb9 -->
+<!-- vibeshare-module-fingerprint: sha256:0d29c7c8e3455425d96b1673919e4441e208c0f3d43c82cd05e032d031187763 -->
 
 `app` 是 VibeShare 的 Next.js / Vinext App Router 应用层，负责观众视图、演讲者视图以及二者共享的演示运行时。
 
@@ -10,7 +10,6 @@
 - 在 `presentation.tsx` 中维护页面定义、逐帧揭示、键盘导航、计时与演讲者备注。
 - 通过 `BroadcastChannel` 同步两个视图，并将当前位置写入 URL hash 和 `sessionStorage`。
 - 在 `presentation-location.ts` 中集中生成并静默替换演示位置 hash。
-- 在 `chatgpt-auth.ts` 中封装托管环境注入的 ChatGPT 用户头与安全的登录跳转地址。
 
 开幕动画由子模块 [`opening`](opening/README.md) 独立负责；按最近祖先 README 规则，其文件不计入本模块指纹。
 
@@ -21,7 +20,6 @@
 - `page.tsx`：观众路由。
 - `presenter/page.tsx`：演讲者路由。
 - `presentation-location.ts`：`#/page/<index>/frame/<index>` 地址协议。
-- `chatgpt-auth.ts`：可选的托管认证边界。
 
 ## 不变量
 

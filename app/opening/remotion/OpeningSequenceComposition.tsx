@@ -748,6 +748,9 @@ function OrbitMetric({
   );
 }
 
+const ORBIT_CLOSING_REVEAL_START = 284;
+const ORBIT_CLOSING_REVEAL_END = 306;
+
 function OrbitScene() {
   const frame = useCurrentFrame();
   const shellIn = between(frame, 0, 28, Easing.out(Easing.cubic));
@@ -785,8 +788,13 @@ function OrbitScene() {
   const marsSelected = between(frame, 260, 280, Easing.out(Easing.cubic));
   const cursorPress = Math.max(orbitDragHeld, marsPress);
   const insightIn = between(frame, 255, 280, Easing.out(Easing.cubic));
-  const scrimIn = between(frame, 315, 338, Easing.inOut(Easing.cubic));
-  const closingIn = between(frame, 330, 352, Easing.out(Easing.cubic));
+  const scrimIn = between(frame, 274, 297, Easing.inOut(Easing.cubic));
+  const closingIn = between(
+    frame,
+    ORBIT_CLOSING_REVEAL_START,
+    ORBIT_CLOSING_REVEAL_END,
+    Easing.out(Easing.cubic),
+  );
 
   return (
     <div className={styles.orbitLabScene}>
@@ -955,10 +963,6 @@ const ghostCards = [
   [styles.planGhostSix, "Dependency · Design system"],
 ] as const;
 const PLAN_ANYTHING_REVEAL_END = 132;
-const PLAN_STATEMENT_HOLD_FRAMES = frameAt(1);
-const PLAN_STATEMENT_FADE_START =
-  PLAN_ANYTHING_REVEAL_END + PLAN_STATEMENT_HOLD_FRAMES;
-const PLAN_STATEMENT_FADE_END = PLAN_STATEMENT_FADE_START + 22;
 
 function PlanScene() {
   const frame = useCurrentFrame();
@@ -990,8 +994,8 @@ function PlanScene() {
             return <span key={idea} style={{ opacity: itemIn * (1 - itemOut), transform: `translateY(${mix(28, -10, itemIn)}px) scale(${mix(0.92, 1, itemIn)})` }}>{idea}</span>;
           })}
         </div>
-        <span className={styles.planLead} style={{ opacity: leadIn * (1 - between(frame, PLAN_STATEMENT_FADE_START, PLAN_STATEMENT_FADE_END)), transform: `translateX(${mix(0, -360, leadShift)}px) scale(${mix(0.96, 1, leadIn)})` }}>Plan</span>
-        <span className={styles.planAnything} style={{ opacity: anythingIn * (1 - between(frame, PLAN_STATEMENT_FADE_START, PLAN_STATEMENT_FADE_END)), clipPath: `inset(0 ${(1 - anythingIn) * 100}% 0 0)`, transform: `translateX(${mix(44, 0, anythingIn)}px)` }}>anything.</span>
+        <span className={styles.planLead} style={{ opacity: leadIn, transform: `translateX(${mix(0, -360, leadShift)}px) scale(${mix(0.96, 1, leadIn)})` }}>Plan</span>
+        <span className={styles.planAnything} style={{ opacity: anythingIn, clipPath: `inset(0 ${(1 - anythingIn) * 100}% 0 0)`, transform: `translateX(${mix(44, 0, anythingIn)}px)` }}>anything.</span>
 
         <div className={styles.planCanvas} style={{ opacity: canvasIn }}>
           <svg className={styles.planConnections} viewBox="0 0 1920 1080" aria-hidden="true">
